@@ -6,15 +6,16 @@ cmake_minimum_required (VERSION 3.8)
 # Добавьте источник в исполняемый файл этого проекта.
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
-
 include_directories(headers)
 
-add_library(card sources/card.cpp
-                 sources/AI.cpp)
+set(SOURCE_FILE
+	fool.cpp
+	sources/Card.cpp
+	sources/AI.cpp
+	icon.rc)
 
-add_executable (fool "fool.cpp" icon.rc)
+add_executable (fool ${SOURCE_FILE})
 
-target_link_libraries(fool card)
 target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-audio-d.lib)
 target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-network-d.lib)
 target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-graphics-d.lib)
