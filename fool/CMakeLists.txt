@@ -12,6 +12,8 @@ set(SOURCE_FILE
 	fool.cpp
 	sources/Card.cpp
 	sources/AI.cpp
+	sources/Application.cpp
+	sources/Utility.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})
