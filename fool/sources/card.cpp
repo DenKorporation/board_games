@@ -5,23 +5,24 @@
 
 #include <stdexcept>
 
-Card::Card(Suit suit, Rank rank, const TextureHolder &textures) : suit(suit), rank(rank)
+Card::Card(Suit suit, Rank rank, const TextureHolder &textures) : mSuit(suit), mRank(rank)
 {
-	sprite.setTexture(textures.get(Textures::ID((Textures::Global::ID)suit, (Textures::Local::ID)rank)));
+	mFrontFaceSprite.setTexture(textures.get(Textures::ID((Textures::Global::ID)suit, (Textures::Local::ID)rank)));
+	mReverseFaceSprite.setTexture(textures.get(Textures::ID((Textures::Global::ReverseFace))));
 }
 
 Card::Rank Card::getRank()
 {
-	return this->rank;
+	return this->mRank;
 }
 
 Card::Suit Card::getSuit()
 {
-	return this->suit;
+	return this->mSuit;
 }
 
 void Card::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
 	states.transform *= getTransform();
-	target.draw(sprite, states);
+	target.draw(mFrontFaceSprite, states);
 }

@@ -14,6 +14,13 @@ set(SOURCE_FILE
 	sources/AI.cpp
 	sources/Application.cpp
 	sources/Utility.cpp
+	sources/State.cpp
+	sources/StateStack.cpp
+	sources/GameStatus.cpp
+	sources/GameState.cpp
+	sources/MenuState.cpp
+	sources/PauseState.cpp
+	sources/StatisticState.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})

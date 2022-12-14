@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ResourceIdentifiers.h"
-#include "ResourceHolder.h"
+#include "ResourceHolder.hpp"
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
@@ -52,8 +52,9 @@ private:
 	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
 private:
-	Rank rank;
-	Suit suit;
+	Rank mRank;
+	Suit mSuit;
 
-	sf::Sprite sprite;
+	sf::Sprite mFrontFaceSprite;
+	sf::Sprite mReverseFaceSprite;
 };

@@ -19,7 +19,9 @@ namespace Textures
 			Clubs = 3,
 			Spades = 4,
 			Background,
-			ReverseFace
+			ReverseFace,
+			PauseMenu,
+			MainMenu,
 		};
 	}
 
@@ -66,6 +68,16 @@ namespace Textures
 		{
 			this->global = global;
 			this->local = local;
+		}
+
+		Global::ID getGlobal()
+		{
+			return global;
+		}
+
+		Local::ID getLocal()
+		{
+			return local;
 		}
 
 		bool operator==(ID const &id) const

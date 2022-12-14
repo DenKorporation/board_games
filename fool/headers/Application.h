@@ -1,8 +1,14 @@
 #pragma once
 
+#include "ResourceHolder.hpp"
+#include "ResourceIdentifiers.h"
+#include "StateStack.h"
+#include "GameStatus.h"
+
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 class Application : private sf::NonCopyable
 {
@@ -12,15 +18,23 @@ public:
 
 private:
 	void update(sf::Time dt);
-	void handleInput();
+	void processInput();
 	void render();
 
-	void updateStatisticText();
+	void updateStatisticText(sf::Time dt);
+	void registerStates();
 
 private:
-	static const sf::Time mFrameTime;
+	static const sf::Time TimePerFrame;
 
-	sf::Time mTimeSinceLastUpdate;
-	int mNumFrame;
 	sf::RenderWindow mWindow;
+	TextureHolder mTextures;
+	FontHolder mFonts;
+	GameStatus mGameStatus;
+
+	StateStack mStateStack;
+
+	sf::Text mStatisticsText;
+	sf::Time mStatisticsUpdateTime;
+	int mStatisticsNumFrames;
 };
