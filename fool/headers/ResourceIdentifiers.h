@@ -103,7 +103,8 @@ namespace Fonts
 {
 	enum ID
 	{
-		Main
+		Main,
+		Label
 	};
 }
 

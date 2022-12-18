@@ -11,6 +11,7 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.f / 144.f);
 
 Application::Application()
 	: mWindow(sf::VideoMode(1920, 1080), "Fool", sf::Style::Fullscreen),
+	  // : mWindow(sf::VideoMode(900, 600), "Fool"),
 	  mTextures(),
 	  mFonts(),
 	  mGameStatus(),
@@ -20,7 +21,9 @@ Application::Application()
 	  mStatisticsNumFrames(0)
 {
 
+	mWindow.setKeyRepeatEnabled(false);
 	mFonts.load(Fonts::Main, getFilePath(Fonts::Main));
+	mFonts.load(Fonts::Label, getFilePath(Fonts::Label));
 
 	mTextures.load(Textures::Global::Background, getFilePath(Textures::Global::Background));
 
@@ -29,13 +32,14 @@ Application::Application()
 	mTextures.load(Textures::Global::PauseMenu, getFilePath(Textures::Global::PauseMenu));
 
 	mStatisticsText.setFont(mFonts.get(Fonts::Main));
-	mStatisticsText.setCharacterSize(10u);
+	mStatisticsText.setOutlineThickness(2.f);
+	mStatisticsText.setCharacterSize(20u);
 	mStatisticsText.setPosition(5.f, 5.f);
 
 	registerStates();
 
 	// change to States::Menu
-	mStateStack.pushState(States::Game);
+	mStateStack.pushState(States::Menu);
 }
 
 void Application::run()
