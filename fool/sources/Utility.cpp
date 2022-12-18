@@ -1,8 +1,5 @@
 #include "Utility.h"
 
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Text.hpp>
-
 #include <cmath>
 #include <assert.h>
 
@@ -141,6 +138,8 @@ std::string getFilePath(Fonts::ID fontID)
 	{
 	case Fonts::Main:
 		return "resources/fonts/Sansation.ttf";
+	case Fonts::Label:
+		return "resources/fonts/Gentlemens Script.otf";
 	default:
 		assert(false);
 	}
@@ -150,11 +149,17 @@ std::string getFilePath(Fonts::ID fontID)
 void centerOrigin(sf::Sprite &sprite)
 {
 	sf::FloatRect bounds = sprite.getLocalBounds();
-	sprite.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
+	sprite.setOrigin(std::floor(bounds.width / 2.f), std::floor(bounds.height / 2.f));
 }
 
 void centerOrigin(sf::Text &text)
 {
 	sf::FloatRect bounds = text.getLocalBounds();
-	text.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
+	text.setOrigin(std::floor(bounds.width / 2.f), std::floor((bounds.height + bounds.top) / 2.f));
+}
+
+void centerOrigin(sf::RectangleShape &shape)
+{
+	sf::FloatRect bounds = shape.getLocalBounds();
+	shape.setOrigin(std::floor(bounds.width / 2.f), std::floor(bounds.height / 2.f));
 }
