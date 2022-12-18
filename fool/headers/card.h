@@ -7,10 +7,12 @@
 #include <SFML/Graphics/Sprite.hpp>
 
 #include <string>
+#include <memory>
 
 class Card : public SceneNode
 {
 public:
+	typedef std::unique_ptr<Card> Ptr;
 	enum Rank
 	{
 		_2 = 2,
@@ -44,9 +46,11 @@ public:
 
 	// change side of the card
 	// for example from reverse to face and back
-	// void changeSide();
+	void changeSide(bool isFaceSide);
 
 	virtual void handleEvent(const sf::Event &event);
+
+	sf::FloatRect getBounds() const;
 
 private:
 	virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
@@ -54,6 +58,8 @@ private:
 private:
 	Rank mRank;
 	Suit mSuit;
+	bool misFaceSide;
+	bool mIsSelected;
 
 	sf::Sprite mFrontFaceSprite;
 	sf::Sprite mReverseFaceSprite;

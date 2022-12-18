@@ -11,6 +11,7 @@
 
 class CardGroup;
 class CardField;
+class CardDeck;
 
 namespace GUI
 {
@@ -21,6 +22,7 @@ class SceneNode : public sf::Drawable, public sf::Transformable, private sf::Non
 {
 	friend class CardGroup;
 	friend class CardField;
+	friend class CardDeck;
 	friend class GUI::Container;
 
 public:

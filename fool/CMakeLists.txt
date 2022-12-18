@@ -30,6 +30,7 @@ set(SOURCE_FILE
 	sources/Button.cpp
 	sources/Label.cpp
 	sources/ShapeNode.cpp
+	sources/CardDeck.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})

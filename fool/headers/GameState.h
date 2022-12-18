@@ -5,6 +5,7 @@
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.h"
 #include "Card.h"
+#include "CardDeck.h"
 
 #include <vector>
 
@@ -19,8 +20,8 @@ public:
 
 private:
 	TextureHolder mTextures;
+	Card::Suit mTrump;
 
-	sf::Time time;
-
-	std::vector<std::vector<Card>> mCards;
+	SceneNode mSceneGraph;
+	CardDeck *mCardDeck;
 };
