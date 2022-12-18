@@ -21,8 +21,11 @@ Card::Suit Card::getSuit()
 	return this->mSuit;
 }
 
-void Card::draw(sf::RenderTarget &target, sf::RenderStates states) const
+void Card::handleEvent(const sf::Event &event)
 {
-	states.transform *= getTransform();
+}
+
+void Card::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const
+{
 	target.draw(mFrontFaceSprite, states);
 }

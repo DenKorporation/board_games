@@ -1,16 +1,14 @@
 #pragma once
 
+#include "SceneNode.h"
 #include "ResourceIdentifiers.h"
 #include "ResourceHolder.hpp"
 
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
 
 #include <string>
 
-class Card : public sf::Drawable, public sf::Transformable
+class Card : public SceneNode
 {
 public:
 	enum Rank
@@ -39,7 +37,7 @@ public:
 	};
 
 public:
-	Card(Suit suit, Rank rank, const TextureHolder &textures);
+	explicit Card(Suit suit, Rank rank, const TextureHolder &textures);
 
 	Rank getRank();
 	Suit getSuit();
@@ -48,8 +46,10 @@ public:
 	// for example from reverse to face and back
 	// void changeSide();
 
+	virtual void handleEvent(const sf::Event &event);
+
 private:
-	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
+	virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
 
 private:
 	Rank mRank;

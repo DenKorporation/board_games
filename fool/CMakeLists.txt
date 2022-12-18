@@ -21,6 +21,15 @@ set(SOURCE_FILE
 	sources/MenuState.cpp
 	sources/PauseState.cpp
 	sources/StatisticState.cpp
+	sources/SceneNode.cpp
+	sources/SpriteNode.cpp
+	sources/CardGroup.cpp
+	sources/CardField.cpp
+	sources/Component.cpp
+	sources/Container.cpp
+	sources/Button.cpp
+	sources/Label.cpp
+	//sources/ShapeNode.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})
