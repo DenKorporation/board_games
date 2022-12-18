@@ -1,6 +1,7 @@
 #pragma once
 
 #include "State.h"
+#include "Container.h"
 
 #include <SFML/Graphics/Sprite.hpp>
 
@@ -14,5 +15,6 @@ public:
 	virtual bool handleEvent(const sf::Event &event);
 
 private:
-	sf::Sprite mMenuSprite;
+	SceneNode mSceneGraph;
+	GUI::Container *mGUIContainer;
 };

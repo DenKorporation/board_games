@@ -155,7 +155,7 @@ void centerOrigin(sf::Sprite &sprite)
 void centerOrigin(sf::Text &text)
 {
 	sf::FloatRect bounds = text.getLocalBounds();
-	text.setOrigin(std::floor(bounds.width / 2.f), std::floor((bounds.height + bounds.top) / 2.f));
+	text.setOrigin(std::floor(bounds.width / 2.f), std::floor((bounds.height + bounds.top) * 1.45f / 2.f));
 }
 
 void centerOrigin(sf::RectangleShape &shape)

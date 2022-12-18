@@ -29,7 +29,7 @@ set(SOURCE_FILE
 	sources/Container.cpp
 	sources/Button.cpp
 	sources/Label.cpp
-	//sources/ShapeNode.cpp
+	sources/ShapeNode.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})
