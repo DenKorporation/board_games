@@ -8,15 +8,24 @@
 
 namespace GUI
 {
-	Button::Button(const FontHolder &fonts)
-		: mText("", fonts.get(Fonts::Main), 30),
-		  mCallback(),
-		  mShape()
+	Button::Style::Style(unsigned int fontSize = 16, sf::Color textColor = sf::Color(255, 255, 255), sf::Color fillColor = sf::Color(105, 105, 105),
+						 sf::Color outlineColor = sf::Color(0, 0, 0), float outlineThickness = 1)
+		: fontSize(fontSize),
+		  textColor(textColor),
+		  fillColor(fillColor),
+		  outlineColor(outlineColor),
+		  outlineThickness(outlineThickness)
 	{
-		mText.setFillColor(sf::Color(255, 255, 255));
-		mShape.setFillColor(sf::Color(105, 105, 105));
-		mShape.setOutlineColor(sf::Color(0, 0, 0));
-		mShape.setOutlineThickness(1.f);
+	}
+
+	Button::Button(const FontHolder &fonts)
+		: mText("", fonts.get(Fonts::Main), 16),
+		  mCallback(),
+		  mShape(),
+		  mNormalStyle(),
+		  mSelectedStyle()
+	{
+		applyStyle(mNormalStyle);
 	}
 
 	void Button::setCallback(Callback callback)
@@ -36,12 +45,6 @@ namespace GUI
 		centerOrigin(mShape);
 	}
 
-	void Button::setFontSize(unsigned int size)
-	{
-		mText.setCharacterSize(size);
-		centerOrigin(mText);
-	}
-
 	bool Button::isSelectable() const
 	{
 		return true;
@@ -50,13 +53,13 @@ namespace GUI
 	void Button::select()
 	{
 		Component::select();
-		mText.setFillColor(sf::Color(255, 0, 0));
+		applyStyle(mSelectedStyle);
 	}
 
 	void Button::deselect()
 	{
 		Component::deselect();
-		mText.setFillColor(sf::Color(255, 255, 255));
+		applyStyle(mNormalStyle);
 	}
 
 	void Button::activate()
@@ -64,6 +67,24 @@ namespace GUI
 		if (mCallback)
 		{
 			mCallback();
+		}
+	}
+
+	void Button::setNormalStyle(Style style)
+	{
+		mNormalStyle = style;
+		if (!isSelected())
+		{
+			applyStyle(mNormalStyle);
+		}
+	}
+
+	void Button::setSelectedStyle(Style style)
+	{
+		mSelectedStyle = style;
+		if (isSelected())
+		{
+			applyStyle(mSelectedStyle);
 		}
 	}
 
@@ -92,6 +113,19 @@ namespace GUI
 	Component::Type Button::getType() const
 	{
 		return Component::Button;
+	}
+
+	void Button::applyStyle(Style style)
+	{
+		mShape.setFillColor(style.fillColor);
+		mShape.setOutlineColor(style.outlineColor);
+		mShape.setOutlineThickness(style.outlineThickness);
+
+		mText.setCharacterSize(style.fontSize);
+		mText.setFillColor(style.textColor);
+
+		centerOrigin(mShape);
+		centerOrigin(mText);
 	}
 
 	void Button::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const

@@ -36,10 +36,14 @@ MenuState::MenuState(StateStack &stack, Context context)
 	GUI::Container::Ptr GUIMenu(new GUI::Container);
 	GUIMenu->setPosition(0.f, winY * 3.f / 5.f);
 
+	GUI::Button::Style normalStyle(winY / 20, sf::Color(255, 255, 255), sf::Color(105, 105, 105), sf::Color::Black, 1.f);
+	GUI::Button::Style selectedStyle(winY / 20, sf::Color::Red, sf::Color(105, 105, 105), sf::Color::Black, 1.f);
+
 	GUI::Button::Ptr playButton(new GUI::Button(*context.fonts));
 	playButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
 	playButton->setText("Play");
-	playButton->setFontSize(winY / 20);
+	playButton->setNormalStyle(normalStyle);
+	playButton->setSelectedStyle(selectedStyle);
 	playButton->setCallback([this]()
 							{
 								requestStackPop(); 
@@ -50,7 +54,8 @@ MenuState::MenuState(StateStack &stack, Context context)
 	statisticButton->setPosition(0.f, (winY / 10.f) * 1.2f);
 	statisticButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
 	statisticButton->setText("Statistic");
-	statisticButton->setFontSize(winY / 20.f);
+	statisticButton->setNormalStyle(normalStyle);
+	statisticButton->setSelectedStyle(selectedStyle);
 	statisticButton->setCallback([this]()
 								 {
 								requestStackPop();
@@ -61,7 +66,8 @@ MenuState::MenuState(StateStack &stack, Context context)
 	exitButton->setPosition(0.f, 2 * (winY / 10.f) * 1.2f);
 	exitButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
 	exitButton->setText("Exit");
-	exitButton->setFontSize(winY / 20.f);
+	exitButton->setNormalStyle(normalStyle);
+	exitButton->setSelectedStyle(selectedStyle);
 	exitButton->setCallback([this]()
 							{ requestStackClear(); });
 
