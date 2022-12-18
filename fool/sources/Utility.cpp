@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include <assert.h>
+#include <fstream>
+#include <string>
 
 // return filepath to card texture
 std::string getFilePath(Card::Suit suit, Card::Rank rank)
@@ -162,4 +164,42 @@ void centerOrigin(sf::RectangleShape &shape)
 {
 	sf::FloatRect bounds = shape.getLocalBounds();
 	shape.setOrigin(std::floor(bounds.width / 2.f), std::floor(bounds.height / 2.f));
+}
+
+std::map<std::string, int> getStatistics()
+{
+	std::map<std::string, int> result;
+	std::ifstream fin(STATISTICPATH);
+	if (!fin.is_open())
+	{
+		std::ofstream fout(STATISTICPATH);
+		fout << "total: 0\nvictory: 0\nlose: 0\ndraw: 0";
+		fout.close();
+		fin.close();
+		fin.open(STATISTICPATH);
+	}
+	std::string str;
+
+	std::getline(fin, str);
+	result["total"] = std::stoi(str.erase(0, 7)); // erase "total: "
+
+	std::getline(fin, str);
+	result["victory"] = std::stoi(str.erase(0, 9)); // erase "victory: "
+
+	std::getline(fin, str);
+	result["lose"] = std::stoi(str.erase(0, 6)); // erase "lose: "
+
+	std::getline(fin, str);
+	result["draw"] = std::stoi(str.erase(0, 6)); // erase "draw: "
+
+	fin.close();
+
+	return result;
+}
+
+void setStatistics(std::map<std::string, int> statistics)
+{
+	std::ofstream fout(STATISTICPATH);
+	fout << "total: " << statistics["total"] << "\nvictory: " << statistics["victory"] << "\nlose: " << statistics["lose"] << "\ndraw: " << statistics["draw"];
+	fout.close();
 }

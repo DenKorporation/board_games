@@ -55,6 +55,11 @@ namespace GUI
 		mText.setFillColor(color);
 	}
 
+	sf::FloatRect Label::getBounds() const
+	{
+		return getWorldTransform().transformRect(mText.getGlobalBounds());
+	}
+
 	void Label::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const
 	{
 		target.draw(mText, states);

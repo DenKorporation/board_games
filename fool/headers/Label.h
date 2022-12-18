@@ -26,6 +26,8 @@ namespace GUI
 		void setLetterSpacing(float letterSpacing);
 		void setFillColor(sf::Color color);
 
+		sf::FloatRect getBounds() const;
+
 	private:
 		virtual void
 		drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
