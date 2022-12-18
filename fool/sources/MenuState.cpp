@@ -10,20 +10,22 @@
 
 MenuState::MenuState(StateStack &stack, Context context)
 	: State(stack, context),
+	  mSceneGraph(),
 	  mGUIContainer()
 {
 	unsigned int winX = context.window->getSize().x, winY = context.window->getSize().y;
 
+	mSceneGraph.setPosition(winX / 2.f, 0.f);
+
 	sf::Texture &texture = context.textures->get(Textures::ID(Textures::Global::Background));
 	SpriteNode::Ptr backgroundSprite(new SpriteNode(texture));
 	backgroundSprite->setScale((float)winX / texture.getSize().x, (float)winY / texture.getSize().y);
+	backgroundSprite->setPosition(0.f, winY / 2.f);
 	mSceneGraph.attachChild(std::move(backgroundSprite));
 
 	GUI::Container::Ptr GUIContainer(new GUI::Container);
 	mGUIContainer = GUIContainer.get();
 	mSceneGraph.attachChild(std::move(GUIContainer));
-
-	mGUIContainer->setPosition(winX / 2.f, 0.f);
 
 	GUI::Label::Ptr logo(new GUI::Label("Fool", *context.fonts, Fonts::Label));
 	logo->setFontSize(winY / 3);

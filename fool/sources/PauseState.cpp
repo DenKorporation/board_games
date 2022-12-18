@@ -10,7 +10,9 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 PauseState::PauseState(StateStack &stack, Context context)
-	: State(stack, context)
+	: State(stack, context),
+	  mSceneGraph(),
+	  mGUIContainer()
 {
 	unsigned int winX = context.window->getSize().x, winY = context.window->getSize().y;
 	sf::Vector2f menuSize = sf::Vector2f(winX / 3.f, winY / 7.f);
