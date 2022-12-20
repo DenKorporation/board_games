@@ -11,6 +11,7 @@ const sf::Time Application::TimePerFrame = sf::seconds(1.f / 144.f);
 
 Application::Application()
 	: mWindow(sf::VideoMode(1920, 1080), "Fool", sf::Style::Fullscreen),
+	  // : mWindow(sf::VideoMode(1600, 900), "Fool"),
 	  // : mWindow(sf::VideoMode(900, 600), "Fool"),
 	  mTextures(),
 	  mFonts(),
@@ -31,10 +32,13 @@ Application::Application()
 	mTextures.load(Textures::Global::MainMenu, getFilePath(Textures::Global::MainMenu));
 	mTextures.load(Textures::Global::PauseMenu, getFilePath(Textures::Global::PauseMenu));
 
+	sf::Vector2f currentWindowSize = sf::Vector2f(mWindow.getSize().x, mWindow.getSize().y);
+	sf::Vector2f defaultWindowSize = sf::Vector2f(1920.f, 1080.f);
+	sf::Vector2f windowScale = sf::Vector2f(currentWindowSize.x / defaultWindowSize.x, currentWindowSize.y / defaultWindowSize.y);
 	mStatisticsText.setFont(mFonts.get(Fonts::Main));
-	mStatisticsText.setOutlineThickness(2.f);
-	mStatisticsText.setCharacterSize(20u);
-	mStatisticsText.setPosition(5.f, 5.f);
+	mStatisticsText.setCharacterSize(20u * windowScale.y);
+	mStatisticsText.setOutlineThickness(2.f * windowScale.y);
+	mStatisticsText.setPosition(5.f * windowScale.x, 5.f * windowScale.y);
 
 	registerStates();
 

@@ -1,6 +1,7 @@
 #include "GameState.h"
 #include "Utility.h"
 #include "SpriteNode.h"
+#include "CardGroup.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -19,14 +20,16 @@ GameState::GameState(StateStack &stack, Context context)
 	}
 	mTextures.load(Textures::ID(Textures::Global::ReverseFace), getFilePath(Textures::Global::ReverseFace));
 
-	unsigned int winX = context.window->getSize().x, winY = context.window->getSize().y;
-	sf::Vector2u cardDefaultSize = mTextures.get(Textures::ID(Textures::Global::ReverseFace)).getSize();
-	sf::Vector2f cardCurrentSize = sf::Vector2f((float)winX * cardDefaultSize.x / 1920, (float)winY * cardDefaultSize.y / 1080);
+	sf::Vector2f currentWindowSize = sf::Vector2f(context.window->getSize().x, context.window->getSize().y);
+	sf::Vector2f defaultWindowSize = sf::Vector2f(1920.f, 1080.f);
+	sf::Vector2f windowScale = sf::Vector2f(currentWindowSize.x / defaultWindowSize.x, currentWindowSize.y / defaultWindowSize.y);
+	sf::Texture &cardTexture = mTextures.get(Textures::ID(Textures::Global::ReverseFace));
+	sf::Vector2f cardCurrentSize = sf::Vector2f(cardTexture.getSize().x * windowScale.x, cardTexture.getSize().y * windowScale.y);
 
 	sf::Texture &texture = context.textures->get(Textures::ID(Textures::Global::Background));
 	SpriteNode::Ptr backgroundSprite(new SpriteNode(texture));
-	backgroundSprite->setScale((float)winX / texture.getSize().x, (float)winY / texture.getSize().y);
-	backgroundSprite->setPosition(winX / 2.f, winY / 2.f);
+	backgroundSprite->setScale(currentWindowSize.x / texture.getSize().x, currentWindowSize.y / texture.getSize().y);
+	backgroundSprite->setPosition(currentWindowSize / 2.f);
 	mSceneGraph.attachChild(std::move(backgroundSprite));
 
 	CardDeck::Ptr cardDeck(new CardDeck());
@@ -39,14 +42,38 @@ GameState::GameState(StateStack &stack, Context context)
 		for (Card::Rank rank = Card::_6; rank <= Card::_Ace; rank = Card::Rank((int)rank + 1))
 		{
 			Card::Ptr card(new Card(suit, rank, mTextures));
-			card->setScale(cardCurrentSize.x / cardDefaultSize.x, cardCurrentSize.y / cardDefaultSize.y);
+			card->setScale(windowScale);
 			mCardDeck->pushCard(std::move(card));
 		}
 	}
 	mCardDeck->shuffle();
 	SpriteNode::Ptr suitSprite(new SpriteNode(mTextures.get(Textures::ID((Textures::Global::ID)mCardDeck->getTrump(), Textures::Local::Main))));
-	suitSprite->setScale(cardCurrentSize.x / cardDefaultSize.x, cardCurrentSize.y / cardDefaultSize.y);
+	suitSprite->setScale(windowScale);
 	mCardDeck->attachChild(std::move(suitSprite));
+
+	CardGroup::Ptr playerCards(new CardGroup(mCardDeck->getTrump(), CardGroup::Player));
+	mPlayerCards = playerCards.get();
+	mSceneGraph.attachChild(std::move(playerCards));
+
+	mPlayerCards->setPosition(currentWindowSize.x / 2.f, currentWindowSize.y - cardCurrentSize.y * 0.6f);
+	mPlayerCards->setLocalSize(sf::Vector2f(currentWindowSize.x / 2.f, cardCurrentSize.y));
+
+	for (size_t i = 0; i < 6; i++)
+	{
+		mPlayerCards->pushCard(mCardDeck->popCard());
+	}
+
+	CardGroup::Ptr enemyCards(new CardGroup(mCardDeck->getTrump(), CardGroup::Enemy));
+	mEnemyCards = enemyCards.get();
+	mSceneGraph.attachChild(std::move(enemyCards));
+
+	mEnemyCards->setPosition(currentWindowSize.x / 2.f, cardCurrentSize.y * 0.6f);
+	mEnemyCards->setLocalSize(sf::Vector2f(currentWindowSize.x / 2.f, cardCurrentSize.y));
+
+	for (size_t i = 0; i < 6; i++)
+	{
+		mEnemyCards->pushCard(mCardDeck->popCard());
+	}
 }
 
 void GameState::draw()
@@ -71,5 +98,6 @@ bool GameState::handleEvent(const sf::Event &event)
 			break;
 		}
 	}
+	mPlayerCards->handleEvent(event);
 	return true;
 }

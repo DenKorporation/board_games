@@ -18,6 +18,7 @@ void CardDeck::handleEvent(const sf::Event &event)
 void CardDeck::pushCard(Card::Ptr card)
 {
 	mCards.push_back(card.get());
+	card->setPosition(0.f, 0.f);
 	attachChild(std::move(card));
 }
 
@@ -30,7 +31,7 @@ Card::Ptr CardDeck::popCard()
 
 	Card::Ptr result(static_cast<Card *>(detachChild((*mCards[mCards.size() - 1])).release()));
 	mCards.pop_back();
-
+	result->setPosition(getPosition());
 	return std::move(result);
 }
 
@@ -49,6 +50,7 @@ void CardDeck::shuffle()
 		child->changeSide(false);
 	}
 	mCards[0]->changeSide(true);
+	mTrump = mCards[0]->getSuit();
 }
 
 void CardDeck::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -62,7 +64,7 @@ void CardDeck::draw(sf::RenderTarget &target, sf::RenderStates states) const
 	{
 		sf::RenderStates customStates = states;
 		customStates.transform.rotate(90);
-		sf::FloatRect bounds = mCards[0]->getBounds();
+		sf::FloatRect bounds = mCards[0]->getGlobalBounds();
 		customStates.transform.translate(0.f, -(bounds.height - bounds.width) / 2.f);
 		mCards[0]->draw(target, customStates);
 		if (mCards.size() > 1)

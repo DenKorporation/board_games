@@ -41,16 +41,26 @@ public:
 public:
 	explicit Card(Suit suit, Rank rank, const TextureHolder &textures);
 
-	Rank getRank();
-	Suit getSuit();
+	Rank getRank() const;
+	Suit getSuit() const;
 
 	// change side of the card
 	// for example from reverse to face and back
 	void changeSide(bool isFaceSide);
 
 	virtual void handleEvent(const sf::Event &event);
+	void checkSelection(sf::Vector2f mousePosition);
+	sf::FloatRect getGlobalBounds() const;
 
-	sf::FloatRect getBounds() const;
+	bool isSelected() const;
+	void select();
+	void deselect();
+
+	bool operator<(const Card &compareTo);
+	bool operator>(const Card &compareTo);
+	bool operator==(const Card &compareTo);
+	bool operator<=(const Card &compareTo);
+	bool operator>=(const Card &compareTo);
 
 private:
 	virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;

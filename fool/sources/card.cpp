@@ -14,12 +14,12 @@ Card::Card(Suit suit, Rank rank, const TextureHolder &textures) : mSuit(suit), m
 	centerOrigin(mReverseFaceSprite);
 }
 
-Card::Rank Card::getRank()
+Card::Rank Card::getRank() const
 {
 	return this->mRank;
 }
 
-Card::Suit Card::getSuit()
+Card::Suit Card::getSuit() const
 {
 	return this->mSuit;
 }
@@ -31,11 +31,76 @@ void Card::changeSide(bool isFaceSide)
 
 void Card::handleEvent(const sf::Event &event)
 {
+	if (event.type == sf::Event::MouseMoved)
+	{
+		checkSelection(sf::Vector2f((float)event.mouseMove.x, (float)event.mouseMove.y));
+	}
 }
 
-sf::FloatRect Card::getBounds() const
+void Card::checkSelection(sf::Vector2f mousePosition)
+{
+	sf::FloatRect bounds = getWorldTransform().transformRect(mFrontFaceSprite.getGlobalBounds());
+	if ((mousePosition.x >= bounds.left) && (mousePosition.x <= bounds.left + bounds.width) &&
+		(mousePosition.y >= bounds.top) && (mousePosition.y <= bounds.top + bounds.height))
+	{
+		if (!isSelected())
+		{
+			select();
+		}
+	}
+	else if (isSelected())
+	{
+		deselect();
+	}
+}
+
+sf::FloatRect Card::getGlobalBounds() const
 {
 	return getWorldTransform().transformRect(mFrontFaceSprite.getGlobalBounds());
+}
+
+bool Card::isSelected() const
+{
+	return mIsSelected;
+}
+
+void Card::select()
+{
+	mIsSelected = true;
+	mFrontFaceSprite.setPosition(0.f, -0.2f * getGlobalBounds().height);
+	mReverseFaceSprite.setPosition(0.f, -0.2f * getGlobalBounds().height);
+}
+
+void Card::deselect()
+{
+	mIsSelected = false;
+	mFrontFaceSprite.setPosition(0.f, 0.f);
+	mReverseFaceSprite.setPosition(0.f, 0.f);
+}
+
+bool Card::operator<(const Card &compareTo)
+{
+	return this->mRank < compareTo.mRank;
+}
+
+bool Card::operator>(const Card &compareTo)
+{
+	return this->mRank > compareTo.mRank;
+}
+
+bool Card::operator==(const Card &compareTo)
+{
+	return this->mRank == compareTo.mRank;
+}
+
+bool Card::operator<=(const Card &compareTo)
+{
+	return this->mRank <= compareTo.mRank;
+}
+
+bool Card::operator>=(const Card &compareTo)
+{
+	return this->mRank >= compareTo.mRank;
 }
 
 void Card::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const

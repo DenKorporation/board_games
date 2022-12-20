@@ -6,6 +6,7 @@
 #include "ResourceIdentifiers.h"
 #include "Card.h"
 #include "CardDeck.h"
+#include "CardGroup.h"
 
 #include <vector>
 
@@ -24,4 +25,6 @@ private:
 
 	SceneNode mSceneGraph;
 	CardDeck *mCardDeck;
+	CardGroup *mPlayerCards;
+	CardGroup *mEnemyCards;
 };
