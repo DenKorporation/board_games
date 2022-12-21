@@ -50,6 +50,8 @@ GameState::GameState(StateStack &stack, Context context)
 	suitSprite->setScale(windowScale);
 	mCardDeck->attachChild(std::move(suitSprite));
 
+	mAI.setTrump(mCardDeck->getTrump());
+
 	CardGroup::Ptr playerCards(new CardGroup(mCardDeck->getTrump(), Player));
 	mPlayerCards = playerCards.get();
 	mSceneGraph.attachChild(std::move(playerCards));

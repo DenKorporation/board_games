@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AI.h"
 #include "State.h"
 #include "GameStatus.h"
 #include "ResourceHolder.hpp"
@@ -34,7 +35,8 @@ public:
 
 private:
 	TextureHolder mTextures;
-	Card::Suit mTrump;
+
+	AI mAI;
 
 	SceneNode mSceneGraph;
 	CardDeck *mCardDeck;
@@ -46,4 +48,5 @@ private:
 	PlayerType mCurrentTurn;
 	PlayerType mCurrentDefender;
 	Status mCurrentStatus;
+	Card::Suit mTrump;
 };
