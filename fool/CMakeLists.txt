@@ -10,7 +10,6 @@ include_directories(headers)
 
 set(SOURCE_FILE
 	fool.cpp
-	sources/Card.cpp
 	sources/AI.cpp
 	sources/Application.cpp
 	sources/Utility.cpp
@@ -23,14 +22,16 @@ set(SOURCE_FILE
 	sources/StatisticState.cpp
 	sources/SceneNode.cpp
 	sources/SpriteNode.cpp
+	sources/ShapeNode.cpp
+	sources/Card.cpp
 	sources/CardGroup.cpp
 	sources/CardField.cpp
+	sources/CardDeck.cpp
+	sources/CardPile.cpp
 	sources/Component.cpp
 	sources/Container.cpp
 	sources/Button.cpp
 	sources/Label.cpp
-	sources/ShapeNode.cpp
-	sources/CardDeck.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})

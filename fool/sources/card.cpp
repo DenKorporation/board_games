@@ -40,8 +40,14 @@ void Card::handleEvent(const sf::Event &event)
 void Card::checkSelection(sf::Vector2f mousePosition)
 {
 	sf::FloatRect bounds = getWorldTransform().transformRect(mFrontFaceSprite.getGlobalBounds());
+	float checkHeight = bounds.height;
+	if (isSelected())
+	{
+		checkHeight *= 1.3f;
+	}
+
 	if ((mousePosition.x >= bounds.left) && (mousePosition.x <= bounds.left + bounds.width) &&
-		(mousePosition.y >= bounds.top) && (mousePosition.y <= bounds.top + bounds.height))
+		(mousePosition.y >= bounds.top) && (mousePosition.y <= bounds.top + checkHeight))
 	{
 		if (!isSelected())
 		{
@@ -67,8 +73,8 @@ bool Card::isSelected() const
 void Card::select()
 {
 	mIsSelected = true;
-	mFrontFaceSprite.setPosition(0.f, -0.2f * getGlobalBounds().height);
-	mReverseFaceSprite.setPosition(0.f, -0.2f * getGlobalBounds().height);
+	mFrontFaceSprite.setPosition(0.f, -0.3f * getGlobalBounds().height);
+	mReverseFaceSprite.setPosition(0.f, -0.3f * getGlobalBounds().height);
 }
 
 void Card::deselect()

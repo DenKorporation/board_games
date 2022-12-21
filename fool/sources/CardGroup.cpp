@@ -4,7 +4,7 @@
 #include <iterator>
 #include <algorithm>
 
-CardGroup::CardGroup(Card::Suit trump, Type type)
+CardGroup::CardGroup(Card::Suit trump, PlayerType type)
 	: mTrump(trump),
 	  mSelectedChild(-1),
 	  mCards(),
@@ -15,7 +15,7 @@ CardGroup::CardGroup(Card::Suit trump, Type type)
 
 void CardGroup::handleEvent(const sf::Event &event)
 {
-	if (mType == Type::Player && event.type == sf::Event::MouseMoved)
+	if (mType == Player && event.type == sf::Event::MouseMoved)
 	{
 		bool isNoSelection = true;
 		for (int i = mCards.size() - 1; i >= 0; i--)
@@ -57,6 +57,10 @@ void CardGroup::pushCard(Card::Ptr card)
 	{
 		card->changeSide(true);
 	}
+	else
+	{
+		card->changeSide(false);
+	}
 	attachChild(std::move(card));
 	sort();
 }
@@ -77,9 +81,48 @@ Card::Ptr CardGroup::getSelectedCard()
 	return std::move(result);
 }
 
+Card::Ptr CardGroup::getCard(const Card &card)
+{
+	Card::Ptr result(static_cast<Card *>(detachChild(card).release()));
+	result->move(getPosition());
+	auto it = std::find(mCards.begin(), mCards.end(), &card);
+	mCards.erase(it);
+	sort();
+	return std::move(result);
+}
+
 bool CardGroup::hasSelection() const
 {
 	return mSelectedChild >= 0;
+}
+
+bool CardGroup::getMinimumTrump(Card::Rank &minRank) const
+{
+	minRank = Card::_Ace;
+	bool result = false;
+	for (auto card = mCards.begin(); card != mCards.end(); card++)
+	{
+		if ((*card)->getSuit() == mTrump)
+		{
+			result = true;
+			if ((*card)->getRank() < minRank)
+			{
+				minRank = (*card)->getRank();
+			}
+		}
+	}
+
+	return result;
+}
+
+int CardGroup::getNumberOfCards() const
+{
+	return mCards.size();
+}
+
+std::vector<Card *> CardGroup::getCards()
+{
+	return mCards;
 }
 
 bool cardComparator(Card *first, Card *second)

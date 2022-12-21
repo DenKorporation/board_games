@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SceneNode.h"
+#include "PlayerIdentifiers.h"
 #include "Card.h"
 
 #include <vector>
@@ -9,21 +10,20 @@ class CardGroup : public SceneNode
 {
 public:
 	typedef std::unique_ptr<CardGroup> Ptr;
-	enum Type
-	{
-		Player,
-		Enemy
-	};
 
 public:
-	CardGroup(Card::Suit trump, Type type);
+	CardGroup(Card::Suit trump, PlayerType type);
 
 	virtual void handleEvent(const sf::Event &event);
 	void checkSelection(sf::Vector2f mousePosition);
 	void pushCard(Card::Ptr card);
 	Card::Ptr getSelectedCard();
+	Card::Ptr getCard(const Card &card);
 	void setLocalSize(sf::Vector2f size);
 	bool hasSelection() const;
+	bool getMinimumTrump(Card::Rank &minRank) const;
+	std::vector<Card *> getCards();
+	int getNumberOfCards() const;
 
 private:
 	void sort();
@@ -35,5 +35,5 @@ private:
 	sf::Vector2f mAreaSize;
 	Card::Suit mTrump;
 	unsigned int mSelectedChild;
-	Type mType;
+	PlayerType mType;
 };

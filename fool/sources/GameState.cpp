@@ -1,7 +1,6 @@
 #include "GameState.h"
 #include "Utility.h"
 #include "SpriteNode.h"
-#include "CardGroup.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -51,29 +50,82 @@ GameState::GameState(StateStack &stack, Context context)
 	suitSprite->setScale(windowScale);
 	mCardDeck->attachChild(std::move(suitSprite));
 
-	CardGroup::Ptr playerCards(new CardGroup(mCardDeck->getTrump(), CardGroup::Player));
+	CardGroup::Ptr playerCards(new CardGroup(mCardDeck->getTrump(), Player));
 	mPlayerCards = playerCards.get();
 	mSceneGraph.attachChild(std::move(playerCards));
 
 	mPlayerCards->setPosition(currentWindowSize.x / 2.f, currentWindowSize.y - cardCurrentSize.y * 0.6f);
 	mPlayerCards->setLocalSize(sf::Vector2f(currentWindowSize.x / 2.f, cardCurrentSize.y));
 
-	for (size_t i = 0; i < 6; i++)
-	{
-		mPlayerCards->pushCard(mCardDeck->popCard());
-	}
-
-	CardGroup::Ptr enemyCards(new CardGroup(mCardDeck->getTrump(), CardGroup::Enemy));
+	CardGroup::Ptr enemyCards(new CardGroup(mCardDeck->getTrump(), Enemy));
 	mEnemyCards = enemyCards.get();
 	mSceneGraph.attachChild(std::move(enemyCards));
 
 	mEnemyCards->setPosition(currentWindowSize.x / 2.f, cardCurrentSize.y * 0.6f);
 	mEnemyCards->setLocalSize(sf::Vector2f(currentWindowSize.x / 2.f, cardCurrentSize.y));
 
+	// Deal of cards
 	for (size_t i = 0; i < 6; i++)
 	{
+		mPlayerCards->pushCard(mCardDeck->popCard());
 		mEnemyCards->pushCard(mCardDeck->popCard());
 	}
+
+	Card::Rank playerMinTrump, enemyMinTrump;
+
+	if (mEnemyCards->getMinimumTrump(enemyMinTrump))
+	{
+		if (mPlayerCards->getMinimumTrump(playerMinTrump) && (playerMinTrump < enemyMinTrump))
+		{
+			mCurrentTurn = Player;
+			mCurrentDefender = Enemy;
+			mCurrentStatus = PlayerTurn;
+		}
+		else
+		{
+			mCurrentTurn = Enemy;
+			mCurrentDefender = Player;
+			mCurrentStatus = EnemyTurn;
+		}
+	}
+	else
+	{
+		mCurrentTurn = Player;
+		mCurrentDefender = Enemy;
+		mCurrentStatus = PlayerTurn;
+	}
+
+	CardPile::Ptr cardPile(new CardPile());
+	mCardPile = cardPile.get();
+	cardPile->setPosition(currentWindowSize.x - cardCurrentSize.x * 0.7f, cardCurrentSize.y * 0.7f);
+	mSceneGraph.attachChild(std::move(cardPile));
+
+	CardField::Ptr cardField(new CardField(mTrump));
+	mCardField = cardField.get();
+	cardField->setPosition(currentWindowSize / 2.f);
+	cardField->setLocalSize(sf::Vector2f(currentWindowSize.x * 2.f / 3.f, currentWindowSize.y / 2.f));
+	mSceneGraph.attachChild(std::move(cardField));
+
+	context.gameStatus->setCurrentStatus(GameStatus::InGame);
+}
+
+GameState::~GameState()
+{
+	auto statistics = getStatistics();
+	statistics["total"]++;
+	switch (getContext().gameStatus->getCurrentStatus())
+	{
+	case GameStatus::PlayerWon:
+		statistics["victory"]++;
+		break;
+	case GameStatus::ComputerWon:
+		statistics["lose"]++;
+		break;
+	case GameStatus::Draw:
+		statistics["draw"]++;
+		break;
+	}
+	setStatistics(statistics);
 }
 
 void GameState::draw()
@@ -98,6 +150,9 @@ bool GameState::handleEvent(const sf::Event &event)
 			break;
 		}
 	}
-	mPlayerCards->handleEvent(event);
+	if (mCurrentStatus == PlayerTurn)
+	{
+		mPlayerCards->handleEvent(event);
+	}
 	return true;
 }

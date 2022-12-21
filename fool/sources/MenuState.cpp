@@ -27,12 +27,12 @@ MenuState::MenuState(StateStack &stack, Context context)
 	mGUIContainer = GUIContainer.get();
 	mSceneGraph.attachChild(std::move(GUIContainer));
 
-	GUI::Label::Ptr logo(new GUI::Label("Fool", *context.fonts, Fonts::Label));
+	GUI::Label::Ptr logo(new GUI::Label("The Fool", *context.fonts, Fonts::Label));
 	logo->setFontSize(winY / 3);
 	logo->setOutlineThickness(7.f);
-	logo->setLetterSpacing(5);
+	logo->setLetterSpacing(2);
 	logo->setFillColor(sf::Color(200, 200, 200));
-	logo->setPosition(0.f, winY / 5.f);
+	logo->setPosition(0.f, winY / 4.f);
 	mGUIContainer->attachChild(std::move(logo));
 
 	GUI::Container::Ptr GUIMenu(new GUI::Container);
