@@ -45,6 +45,12 @@ namespace GUI
 		centerOrigin(mShape);
 	}
 
+	void Button::clearTextAndCallback()
+	{
+		setCallback([this]() {});
+		setText("");
+	}
+
 	bool Button::isSelectable() const
 	{
 		return true;

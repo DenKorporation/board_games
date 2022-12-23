@@ -32,6 +32,10 @@ void CardGroup::handleEvent(const sf::Event &event)
 				break;
 			}
 		}
+		if (isNoSelection)
+		{
+			mSelectedChild = -1;
+		}
 	}
 }
 
@@ -51,6 +55,7 @@ void CardGroup::checkSelection(sf::Vector2f mousePosition)
 
 void CardGroup::pushCard(Card::Ptr card)
 {
+	mSelectedChild = -1;
 	mCards.push_back(card.get());
 	card->setPosition(0.f, 0.f);
 	if (mType == Player)
@@ -65,25 +70,26 @@ void CardGroup::pushCard(Card::Ptr card)
 	sort();
 }
 
-Card::Ptr CardGroup::getSelectedCard()
+Card *CardGroup::getSelectedCard()
 {
 	if (!hasSelection())
 	{
 		throw std::runtime_error("CardGroup::getSelectedCard there is no selected card");
 	}
-
-	Card::Ptr result(static_cast<Card *>(detachChild((*mCards[mSelectedChild])).release()));
-	result->move(getPosition());
-	auto it = mCards.begin();
-	std::advance(it, mSelectedChild);
-	mCards.erase(it);
-	sort();
-	return std::move(result);
+	Card *result = mCards[mSelectedChild];
+	return result;
 }
 
 Card::Ptr CardGroup::getCard(const Card &card)
 {
 	Card::Ptr result(static_cast<Card *>(detachChild(card).release()));
+
+	if (hasSelection() && mCards[mSelectedChild] == result.get())
+	{
+		mCards[mSelectedChild]->deselect();
+	}
+	mSelectedChild = -1;
+
 	result->move(getPosition());
 	auto it = std::find(mCards.begin(), mCards.end(), &card);
 	mCards.erase(it);

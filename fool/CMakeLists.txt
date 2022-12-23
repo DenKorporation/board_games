@@ -20,6 +20,7 @@ set(SOURCE_FILE
 	sources/MenuState.cpp
 	sources/PauseState.cpp
 	sources/StatisticState.cpp
+	sources/GameEndState.cpp
 	sources/SceneNode.cpp
 	sources/SpriteNode.cpp
 	sources/ShapeNode.cpp

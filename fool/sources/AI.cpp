@@ -68,7 +68,7 @@ AI::Action AI::getCard(CardField::Type type, Card *&result, std::vector<Card *> 
 	{
 		if (fieldAttackCards.size() > fieldDefenseCards.size())
 		{
-			Card *currentCard = fieldAttackCards[fieldDefenseCards.size() - 1];
+			Card *currentCard = fieldAttackCards[fieldDefenseCards.size()];
 
 			for (auto card : cards)
 			{
@@ -100,7 +100,7 @@ AI::Action AI::getCard(CardField::Type type, Card *&result, std::vector<Card *> 
 	}
 }
 
-bool cardComparator(Card *first, Card *second)
+bool cardAIComparator(Card *first, Card *second)
 {
 	if (first->getRank() != second->getRank())
 	{
@@ -129,8 +129,8 @@ Card *AI::getRandom(std::vector<Card *> cards)
 		}
 	}
 
-	std::sort(commonCards.begin(), commonCards.end(), cardComparator);
-	std::sort(trumpCards.begin(), trumpCards.end(), cardComparator);
+	std::sort(commonCards.begin(), commonCards.end(), cardAIComparator);
+	std::sort(trumpCards.begin(), trumpCards.end(), cardAIComparator);
 
 	cards.clear();
 	cards.insert(cards.end(), commonCards.begin(), commonCards.end());

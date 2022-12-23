@@ -3,6 +3,9 @@
 #include "AI.h"
 #include "State.h"
 #include "GameStatus.h"
+#include "Container.h"
+#include "Button.h"
+#include "Label.h"
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.h"
 #include "PlayerIdentifiers.h"
@@ -38,15 +41,23 @@ private:
 
 	AI mAI;
 
+	sf::Time elapsedTime;
+
 	SceneNode mSceneGraph;
 	CardDeck *mCardDeck;
 	CardGroup *mPlayerCards;
 	CardGroup *mEnemyCards;
 	CardPile *mCardPile;
 	CardField *mCardField;
+	GUI::Container *mGUIContainer;
+	GUI::Button *mLeftButton;
+	GUI::Button *mRightButton;
+	GUI::Label *mMainLabel;
 
-	PlayerType mCurrentTurn;
+	AI::Action mPlayerAction;
 	PlayerType mCurrentDefender;
 	Status mCurrentStatus;
 	Card::Suit mTrump;
+
+	bool mAvailableSelection;
 };

@@ -9,5 +9,6 @@ namespace States
 		Game,
 		Pause,
 		Statistic,
+		GameEnd
 	};
 }

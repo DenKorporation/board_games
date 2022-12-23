@@ -17,7 +17,7 @@ public:
 	virtual void handleEvent(const sf::Event &event);
 	void checkSelection(sf::Vector2f mousePosition);
 	void pushCard(Card::Ptr card);
-	Card::Ptr getSelectedCard();
+	Card *getSelectedCard();
 	Card::Ptr getCard(const Card &card);
 	void setLocalSize(sf::Vector2f size);
 	bool hasSelection() const;
@@ -34,6 +34,6 @@ private:
 	std::vector<Card *> mCards;
 	sf::Vector2f mAreaSize;
 	Card::Suit mTrump;
-	unsigned int mSelectedChild;
+	int mSelectedChild;
 	PlayerType mType;
 };

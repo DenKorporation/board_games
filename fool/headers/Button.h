@@ -37,6 +37,7 @@ namespace GUI
 		void setCallback(Callback callback);
 		void setText(const std::string &text);
 		void setSize(sf::Vector2f size);
+		void clearTextAndCallback();
 
 		virtual bool isSelectable() const;
 		virtual void select();

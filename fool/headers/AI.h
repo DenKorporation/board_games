@@ -10,6 +10,7 @@ class AI
 public:
 	enum Action
 	{
+		None,
 		Pass,
 		DiscardCards,
 		PutCard,

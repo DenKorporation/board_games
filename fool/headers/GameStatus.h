@@ -10,7 +10,7 @@ public:
 		None,
 		InGame,
 		PlayerWon,
-		ComputerWon,
+		EnemyWon,
 		Draw
 	};
 

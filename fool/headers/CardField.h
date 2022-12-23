@@ -22,6 +22,7 @@ public:
 
 	virtual void handleEvent(const sf::Event &event);
 
+	void setTrump(Card::Suit trump);
 	void pushCard(Card::Ptr card, Type type);
 	bool checkCard(Card *card, Type type) const;
 	void setLocalSize(sf::Vector2f size);

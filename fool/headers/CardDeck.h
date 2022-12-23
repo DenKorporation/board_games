@@ -18,6 +18,7 @@ public:
 	void pushCard(Card::Ptr card);
 	Card::Ptr popCard();
 	Card::Suit getTrump();
+	bool isEmpty() const;
 
 	void shuffle();
 

@@ -13,6 +13,11 @@ void CardField::handleEvent(const sf::Event &event)
 {
 }
 
+void CardField::setTrump(Card::Suit trump)
+{
+	mTrump = trump;
+}
+
 void CardField::pushCard(Card::Ptr card, Type type)
 {
 	if (type == Attack)
@@ -32,6 +37,10 @@ void CardField::pushCard(Card::Ptr card, Type type)
 
 bool CardField::checkCard(Card *card, Type type) const
 {
+	if (type == Attack && mAttackCards.size() == 0)
+	{
+		return true;
+	}
 	if (type == Attack && mAttackCards.size() < 6)
 	{
 		Card::Rank rank = card->getRank();

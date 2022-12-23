@@ -40,6 +40,11 @@ Card::Suit CardDeck::getTrump()
 	return mTrump;
 }
 
+bool CardDeck::isEmpty() const
+{
+	return mCards.empty();
+}
+
 void CardDeck::shuffle()
 {
 	auto rd = std::random_device{};
