@@ -201,6 +201,11 @@ bool GameState::update(sf::Time dt)
 			Card *result;
 			CardField::Type type = (mCurrentDefender == Player) ? CardField::Defense : CardField::Attack;
 
+			if (mPlayerAction == AI::PutCard && !mPlayerCards->hasSelection())
+			{
+				mPlayerAction == AI::None;
+			}
+
 			if (type == CardField::Attack && mPlayerAction == AI::PutCard)
 			{
 				if (mCardField->getNumberOfAttackCards() >= 6 ||
