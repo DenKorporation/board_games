@@ -4,6 +4,7 @@
 #include "Container.h"
 
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Audio/Music.hpp>
 
 class GameEndState : public State
 {
@@ -16,5 +17,8 @@ public:
 
 private:
 	SceneNode mSceneGraph;
+
+	sf::Music mGameEndTheme;
+
 	GUI::Container *mGUIContainer;
 };

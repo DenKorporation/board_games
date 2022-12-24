@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Audio/SoundBuffer.hpp>
+
 namespace sf
 {
 	class Texture;
@@ -108,8 +110,31 @@ namespace Fonts
 	};
 }
 
+namespace Sounds
+{
+	enum ID
+	{
+		CardSelect,
+		ButtonSelect,
+		Error,
+		Shuffle,
+		CardFlip
+	};
+}
+
+namespace Musics
+{
+	enum ID
+	{
+		DrawTheme,
+		VictoryTheme,
+		LoseTheme
+	};
+}
+
 template <typename Resource, typename Identifier>
 class ResourceHolder;
 
 typedef ResourceHolder<sf::Texture, Textures::ID> TextureHolder;
 typedef ResourceHolder<sf::Font, Fonts::ID> FontHolder;
+typedef ResourceHolder<sf::SoundBuffer, Sounds::ID> SoundHolder;

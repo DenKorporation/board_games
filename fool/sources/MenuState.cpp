@@ -41,7 +41,7 @@ MenuState::MenuState(StateStack &stack, Context context)
 	GUI::Button::Style normalStyle(winY / 20, sf::Color(255, 255, 255), sf::Color(105, 105, 105), sf::Color::Black, 1.f);
 	GUI::Button::Style selectedStyle(winY / 20, sf::Color::Red, sf::Color(105, 105, 105), sf::Color::Black, 1.f);
 
-	GUI::Button::Ptr playButton(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr playButton(new GUI::Button(*context.fonts, *context.sounds));
 	playButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
 	playButton->setText("Play");
 	playButton->setNormalStyle(normalStyle);
@@ -52,7 +52,7 @@ MenuState::MenuState(StateStack &stack, Context context)
 								requestStackPush(States::Game); });
 	GUIMenu->attachChild(std::move(playButton));
 
-	GUI::Button::Ptr statisticButton(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr statisticButton(new GUI::Button(*context.fonts, *context.sounds));
 	statisticButton->setPosition(0.f, (winY / 10.f) * 1.2f);
 	statisticButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
 	statisticButton->setText("Statistic");
@@ -64,7 +64,7 @@ MenuState::MenuState(StateStack &stack, Context context)
 								requestStackPush(States::Statistic); });
 	GUIMenu->attachChild(std::move(statisticButton));
 
-	GUI::Button::Ptr exitButton(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr exitButton(new GUI::Button(*context.fonts, *context.sounds));
 	exitButton->setPosition(0.f, 2 * (winY / 10.f) * 1.2f);
 	exitButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
 	exitButton->setText("Exit");

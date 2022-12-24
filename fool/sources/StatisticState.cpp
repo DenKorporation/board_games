@@ -42,7 +42,7 @@ StatisticState::StatisticState(StateStack &stack, Context context)
 	label->setPosition(0.f, blockSize.y * 0.1f);
 	mGUIContainer->attachChild(std::move(label));
 
-	GUI::Button::Ptr backButton(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr backButton(new GUI::Button(*context.fonts, *context.sounds));
 	backButton->setPosition(0.f, blockSize.y * 0.9f);
 	backButton->setSize(sf::Vector2f(blockSize.x / 3.f, blockSize.y / 10.f));
 	backButton->setText("Back");

@@ -1,22 +1,27 @@
 #include "Animation.h"
 
-Animation::Animation(Card *node, SceneNode *parent, SceneNode *destination, sf::Vector2f startPosition, sf::Vector2f endPosition, sf::Time animationTime)
+Animation::Animation(Card *node, SceneNode *parent, SceneNode *destination, sf::Vector2f startPosition, sf::Vector2f endPosition, sf::Time animationTime, const SoundHolder &sounds)
 	: mNode(node),
 	  mParent(parent),
 	  mDestination(destination),
 	  mVelocity((endPosition - startPosition) / animationTime.asSeconds()),
-	  mAnimationTime(animationTime)
+	  mAnimationTime(animationTime),
+	  isSoundStarted(false)
 {
+	mSound.setBuffer(sounds.get(Sounds::CardFlip));
 	node->setPosition(startPosition);
 }
-Animation::Animation(Card *node, SceneNode *parent, SceneNode *destination, CardField::Type type, sf::Vector2f startPostion, sf::Vector2f endPosition, sf::Time animationTime)
+Animation::Animation(Card *node, SceneNode *parent, SceneNode *destination, CardField::Type type, sf::Vector2f startPosition, sf::Vector2f endPosition, sf::Time animationTime, const SoundHolder &sounds)
 	: mNode(node),
 	  mParent(parent),
 	  mDestination(destination),
-	  mVelocity((endPosition - startPostion) / animationTime.asSeconds()),
+	  mVelocity((endPosition - startPosition) / animationTime.asSeconds()),
 	  mAnimationTime(animationTime),
-	  mType(type)
+	  mType(type),
+	  isSoundStarted(false)
 {
+	mSound.setBuffer(sounds.get(Sounds::CardFlip));
+	node->setPosition(startPosition);
 }
 
 void Animation::release()
@@ -42,6 +47,12 @@ bool Animation::update(const sf::Time dt)
 	mElapsedTime += dt;
 	if (mElapsedTime > mDelayTime)
 	{
+		if (!isSoundStarted)
+		{
+			isSoundStarted = true;
+			mSound.play();
+		}
+
 		mNode->move(std::min(dt.asSeconds(), (mElapsedTime - mDelayTime).asSeconds()) * mVelocity);
 	}
 	if (mElapsedTime < mAnimationTime + mDelayTime)

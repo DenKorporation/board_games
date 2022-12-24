@@ -16,6 +16,8 @@
 #include "CardField.h"
 #include "Animation.h"
 
+#include <SFML/Audio/Sound.hpp>
+
 #include <vector>
 
 class GameState : public State
@@ -46,6 +48,9 @@ private:
 
 	sf::Time elapsedTime;
 	sf::Time mLabelElapsedTime;
+
+	sf::Sound mErrorSound;
+	sf::Sound mDealCardsSound;
 
 	SceneNode mSceneGraph;
 	CardDeck *mCardDeck;

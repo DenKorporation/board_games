@@ -34,7 +34,7 @@ PauseState::PauseState(StateStack &stack, Context context)
 	label->setPosition(0.f, -menuSize.y / 4.f);
 	mGUIContainer->attachChild(std::move(label));
 
-	GUI::Button::Ptr yesButton(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr yesButton(new GUI::Button(*context.fonts, *context.sounds));
 	yesButton->setPosition(-menuSize.x / 4.f, menuSize.y / 4.f);
 	yesButton->setSize(sf::Vector2f(menuSize.x / 3.f, menuSize.y / 4.f));
 	yesButton->setText("YES");
@@ -48,7 +48,7 @@ PauseState::PauseState(StateStack &stack, Context context)
 		requestStackPush(States::Menu); });
 	mGUIContainer->attachChild(std::move(yesButton));
 
-	GUI::Button::Ptr cancelButton(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr cancelButton(new GUI::Button(*context.fonts, *context.sounds));
 	cancelButton->setPosition(menuSize.x / 4.f, menuSize.y / 4.f);
 	cancelButton->setSize(sf::Vector2f(menuSize.x / 3.f, menuSize.y / 4.f));
 	cancelButton->setText("CANCEL");

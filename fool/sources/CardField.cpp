@@ -125,20 +125,20 @@ std::vector<Card *> CardField::getDefenseCards()
 	return mDefenseCards;
 }
 
-std::vector<Animation *> CardField::clearFields(SceneNode *destination)
+std::vector<Animation *> CardField::clearFields(SceneNode *destination, const SoundHolder &sounds)
 {
 	sf::Time animationTime = sf::seconds(1.f);
-	if (dynamic_cast<CardGroup *>(destination) != nullptr)
-	{
-		animationTime = sf::seconds(0.5f);
-	}
+	// if (dynamic_cast<CardGroup *>(destination) != nullptr)
+	// {
+	// 	animationTime = sf::seconds(0.5f);
+	// }
 
 	std::vector<Animation *> animations;
 	int count = 0;
 	for (auto card = mAttackCards.begin(); card != mAttackCards.end(); card++)
 	{
 		(*card)->move(getPosition());
-		animations.push_back(new Animation(*card, mParent, static_cast<SceneNode *>(destination), (*card)->getPosition(), destination->getPosition(), animationTime));
+		animations.push_back(new Animation(*card, mParent, static_cast<SceneNode *>(destination), (*card)->getPosition(), destination->getPosition(), animationTime, sounds));
 		animations[animations.size() - 1]->setDelayTime(sf::seconds(0.1f * count));
 		count++;
 		mParent->attachChild(detachChild(**card));
@@ -148,7 +148,7 @@ std::vector<Animation *> CardField::clearFields(SceneNode *destination)
 	for (auto card = mDefenseCards.begin(); card != mDefenseCards.end(); card++)
 	{
 		(*card)->move(getPosition());
-		animations.push_back(new Animation(*card, mParent, static_cast<SceneNode *>(destination), (*card)->getPosition(), destination->getPosition(), animationTime));
+		animations.push_back(new Animation(*card, mParent, static_cast<SceneNode *>(destination), (*card)->getPosition(), destination->getPosition(), animationTime, sounds));
 		animations[animations.size() - 1]->setDelayTime(sf::seconds(0.05f + 0.1f * count));
 		mParent->attachChild(detachChild(**card));
 		count++;

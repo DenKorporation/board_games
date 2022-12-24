@@ -15,6 +15,11 @@ GameState::GameState(StateStack &stack, Context context)
 	  mAvailableSelection(true),
 	  mTakesConfirmation(false)
 {
+	mErrorSound.setBuffer(context.sounds->get(Sounds::Error));
+	mErrorSound.setVolume(10);
+
+	mDealCardsSound.setBuffer(context.sounds->get(Sounds::Shuffle));
+
 	for (Card::Suit suit = Card::Diamonds; suit <= Card::Spades; suit = Card::Suit((int)suit + 1))
 	{
 		for (Card::Rank rank = Card::_6; rank <= Card::_Ace; rank = Card::Rank((int)rank + 1))
@@ -46,7 +51,7 @@ GameState::GameState(StateStack &stack, Context context)
 	{
 		for (Card::Rank rank = Card::_6; rank <= Card::_Ace; rank = Card::Rank((int)rank + 1))
 		{
-			Card::Ptr card(new Card(suit, rank, mTextures));
+			Card::Ptr card(new Card(suit, rank, mTextures, *context.sounds));
 			card->setScale(windowScale);
 			mCardDeck->pushCard(std::move(card));
 		}
@@ -89,7 +94,7 @@ GameState::GameState(StateStack &stack, Context context)
 	mSceneGraph.attachChild(std::move(GUIContainer));
 	mGUIContainer->setPosition(currentWindowSize.x / 2.f, 0.f);
 
-	GUI::Button::Ptr leftBtn(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr leftBtn(new GUI::Button(*context.fonts, *context.sounds));
 	mLeftButton = leftBtn.get();
 	mGUIContainer->attachChild(std::move(leftBtn));
 	mLeftButton->setPosition(-currentWindowSize.x / 3.f, currentWindowSize.y - cardCurrentSize.y * 0.6f);
@@ -99,7 +104,7 @@ GameState::GameState(StateStack &stack, Context context)
 	mLeftButton->setSelectedStyle(GUI::Button::Style(cardCurrentSize.y * 0.3f, sf::Color::Red, sf::Color(105, 105, 105, 150),
 													 sf::Color::Black, 3.f));
 
-	GUI::Button::Ptr rightBtn(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr rightBtn(new GUI::Button(*context.fonts, *context.sounds));
 	mRightButton = rightBtn.get();
 	mGUIContainer->attachChild(std::move(rightBtn));
 	mRightButton->setPosition(currentWindowSize.x / 3.f, currentWindowSize.y - cardCurrentSize.y * 0.6f);
@@ -125,15 +130,16 @@ GameState::GameState(StateStack &stack, Context context)
 	{
 		Card::Ptr playerCard = mCardDeck->popCard();
 		mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
-											playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f)));
+											playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f), *context.sounds));
 		mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(i * 0.2f));
 		mSceneGraph.attachChild(std::move(playerCard));
 		Card::Ptr enemyCard = mCardDeck->popCard();
 		mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
-											enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f)));
+											enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f), *context.sounds));
 		mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(0.1f + i * 0.2f));
 		mSceneGraph.attachChild(std::move(enemyCard));
 	}
+	mDealCardsSound.play();
 }
 
 GameState::~GameState()
@@ -202,6 +208,7 @@ bool GameState::update(sf::Time dt)
 				{
 					mPlayerAction = AI::None;
 					mMainLabel->setText("Incorrect action");
+					mErrorSound.play();
 					mMainLabel->setFillColor(sf::Color::Red);
 					mLabelElapsedTime = sf::Time::Zero;
 				}
@@ -215,13 +222,14 @@ bool GameState::update(sf::Time dt)
 				if (!mCardField->checkCard(result, type))
 				{
 					mMainLabel->setText("Incorrect action");
+					mErrorSound.play();
 					mMainLabel->setFillColor(sf::Color::Red);
 					mLabelElapsedTime = sf::Time::Zero;
 					break;
 				}
 				Card::Ptr card = mPlayerCards->getCard(*result);
 				mAnimations.push_back(new Animation(card.get(), &mSceneGraph, static_cast<SceneNode *>(mCardField), type,
-													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(0.5f)));
+													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(1.f), *getContext().sounds));
 				mSceneGraph.attachChild(std::move(card));
 
 				if (!mTakesConfirmation)
@@ -254,7 +262,7 @@ bool GameState::update(sf::Time dt)
 			case AI::TakeCards:
 				if (mPlayerCards->getNumberOfCards() == 0)
 				{
-					std::vector<Animation *> temp = mCardField->clearFields(mPlayerCards);
+					std::vector<Animation *> temp = mCardField->clearFields(mPlayerCards, *getContext().sounds);
 					mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
 					mCurrentDefender = Player;
 					mCurrentStatus = ClearField;
@@ -271,7 +279,7 @@ bool GameState::update(sf::Time dt)
 			case AI::Pass:
 				if (mTakesConfirmation)
 				{
-					std::vector<Animation *> temp = mCardField->clearFields(mEnemyCards);
+					std::vector<Animation *> temp = mCardField->clearFields(mEnemyCards, *getContext().sounds);
 					mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
 					mCurrentDefender = Enemy;
 					mCurrentStatus = ClearField;
@@ -285,7 +293,7 @@ bool GameState::update(sf::Time dt)
 				elapsedTime = sf::Time::Zero;
 				break;
 			case AI::DiscardCards:
-				std::vector<Animation *> temp = mCardField->clearFields(mCardPile);
+				std::vector<Animation *> temp = mCardField->clearFields(mCardPile, *getContext().sounds);
 				mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
 				mLeftButton->clearTextAndCallback();
 				mRightButton->clearTextAndCallback();
@@ -325,7 +333,7 @@ bool GameState::update(sf::Time dt)
 				}
 				Card::Ptr card = mEnemyCards->getCard(*result);
 				mAnimations.push_back(new Animation(card.get(), &mSceneGraph, static_cast<SceneNode *>(mCardField), type,
-													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(0.5f)));
+													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(1.f), *getContext().sounds));
 				mSceneGraph.attachChild(std::move(card));
 				if (mTakesConfirmation)
 				{
@@ -359,7 +367,7 @@ bool GameState::update(sf::Time dt)
 				mLabelElapsedTime = sf::Time::Zero;
 				if (mEnemyCards->getNumberOfCards() == 0)
 				{
-					std::vector<Animation *> temp = mCardField->clearFields(mEnemyCards);
+					std::vector<Animation *> temp = mCardField->clearFields(mEnemyCards, *getContext().sounds);
 					mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
 					mCurrentDefender = Enemy;
 					mCurrentStatus = ClearField;
@@ -376,7 +384,7 @@ bool GameState::update(sf::Time dt)
 			case AI::Pass:
 				if (mTakesConfirmation)
 				{
-					std::vector<Animation *> temp = mCardField->clearFields(mPlayerCards);
+					std::vector<Animation *> temp = mCardField->clearFields(mPlayerCards, *getContext().sounds);
 					mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
 					mCurrentDefender = Player;
 					mCurrentStatus = ClearField;
@@ -396,7 +404,7 @@ bool GameState::update(sf::Time dt)
 				}
 				break;
 			case AI::DiscardCards:
-				std::vector<Animation *> temp = mCardField->clearFields(mCardPile);
+				std::vector<Animation *> temp = mCardField->clearFields(mCardPile, *getContext().sounds);
 				mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
 				mCurrentStatus = ClearField;
 				mCurrentDefender = Player;
@@ -418,7 +426,7 @@ bool GameState::update(sf::Time dt)
 					}
 					Card::Ptr playerCard = mCardDeck->popCard();
 					mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
-														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f)));
+														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f), *getContext().sounds));
 					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
 					mSceneGraph.attachChild(std::move(playerCard));
 					commonCounter++;
@@ -431,7 +439,7 @@ bool GameState::update(sf::Time dt)
 					}
 					Card::Ptr enemyCard = mCardDeck->popCard();
 					mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
-														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f)));
+														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f), *getContext().sounds));
 					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
 					mSceneGraph.attachChild(std::move(enemyCard));
 					commonCounter++;
@@ -447,7 +455,7 @@ bool GameState::update(sf::Time dt)
 					}
 					Card::Ptr enemyCard = mCardDeck->popCard();
 					mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
-														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f)));
+														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f), *getContext().sounds));
 					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
 					mSceneGraph.attachChild(std::move(enemyCard));
 					commonCounter++;
@@ -460,7 +468,7 @@ bool GameState::update(sf::Time dt)
 					}
 					Card::Ptr playerCard = mCardDeck->popCard();
 					mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
-														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f)));
+														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f), *getContext().sounds));
 					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
 					mSceneGraph.attachChild(std::move(playerCard));
 					commonCounter++;

@@ -5,6 +5,7 @@
 #include "ResourceHolder.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Audio/Sound.hpp>
 
 #include <string>
 #include <memory>
@@ -39,7 +40,7 @@ public:
 	};
 
 public:
-	explicit Card(Suit suit, Rank rank, const TextureHolder &textures);
+	explicit Card(Suit suit, Rank rank, const TextureHolder &textures, SoundHolder &sounds);
 
 	Rank getRank() const;
 	Suit getSuit() const;
@@ -70,6 +71,8 @@ private:
 	Suit mSuit;
 	bool misFaceSide;
 	bool mIsSelected;
+
+	sf::Sound mSelectedSound;
 
 	sf::Sprite mFrontFaceSprite;
 	sf::Sprite mReverseFaceSprite;

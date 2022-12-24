@@ -18,13 +18,14 @@ namespace GUI
 	{
 	}
 
-	Button::Button(const FontHolder &fonts)
+	Button::Button(const FontHolder &fonts, const SoundHolder &sounds)
 		: mText("", fonts.get(Fonts::Main), 16),
 		  mCallback(),
 		  mShape(),
 		  mNormalStyle(),
 		  mSelectedStyle()
 	{
+		mSelectSound.setBuffer(sounds.get(Sounds::ButtonSelect));
 		applyStyle(mNormalStyle);
 	}
 
@@ -60,6 +61,7 @@ namespace GUI
 	{
 		Component::select();
 		applyStyle(mSelectedStyle);
+		mSelectSound.play();
 	}
 
 	void Button::deselect()

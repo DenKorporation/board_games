@@ -23,11 +23,12 @@ public:
 
 	struct Context
 	{
-		Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, GameStatus &gameStatus);
+		Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, SoundHolder &sounds, GameStatus &gameStatus);
 
 		sf::RenderWindow *window;
 		TextureHolder *textures;
 		FontHolder *fonts;
+		SoundHolder *sounds;
 		GameStatus *gameStatus;
 	};
 

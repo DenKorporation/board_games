@@ -6,6 +6,7 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Audio/Sound.hpp>
 
 #include <memory>
 #include <vector>
@@ -32,7 +33,7 @@ namespace GUI
 		};
 
 	public:
-		Button(const FontHolder &fonts);
+		Button(const FontHolder &fonts, const SoundHolder &sounds);
 
 		void setCallback(Callback callback);
 		void setText(const std::string &text);
@@ -58,6 +59,8 @@ namespace GUI
 	private:
 		Style mNormalStyle;
 		Style mSelectedStyle;
+
+		sf::Sound mSelectSound;
 
 		Callback mCallback;
 		sf::RectangleShape mShape;

@@ -148,6 +148,42 @@ std::string getFilePath(Fonts::ID fontID)
 	return "";
 }
 
+std::string getFilePath(Sounds::ID soundID)
+{
+	switch (soundID)
+	{
+	case Sounds::CardSelect:
+		return "resources/sounds/cardSelect.wav";
+	case Sounds::ButtonSelect:
+		return "resources/sounds/buttonSelect.wav";
+	case Sounds::Error:
+		return "resources/sounds/errorSound.wav";
+	case Sounds::Shuffle:
+		return "resources/sounds/shuffle.wav";
+	case Sounds::CardFlip:
+		return "resources/sounds/cardFlip.wav";
+	default:
+		assert(false);
+	}
+	return "";
+}
+
+std::string getFilePath(Musics::ID musicID)
+{
+	switch (musicID)
+	{
+	case Musics::DrawTheme:
+		return "resources/sounds/drawTheme.wav";
+	case Musics::VictoryTheme:
+		return "resources/sounds/victoryTheme.wav";
+	case Musics::LoseTheme:
+		return "resources/sounds/loseTheme.wav";
+	default:
+		assert(false);
+	}
+	return "";
+}
+
 void centerOrigin(sf::Sprite &sprite)
 {
 	sf::FloatRect bounds = sprite.getLocalBounds();

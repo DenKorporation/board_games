@@ -32,7 +32,7 @@ public:
 	std::vector<Card *> getDefenseCards();
 	int getNumberOfAttackCards() const;
 	int getNumberOfDefenseCards() const;
-	std::vector<Animation *> clearFields(SceneNode *destination);
+	std::vector<Animation *> clearFields(SceneNode *destination, const SoundHolder &sounds);
 	sf::Vector2f getPlace(Type type, Card *card);
 
 private:

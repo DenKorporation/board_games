@@ -30,6 +30,7 @@ private:
 	sf::RenderWindow mWindow;
 	TextureHolder mTextures;
 	FontHolder mFonts;
+	SoundHolder mSounds;
 	GameStatus mGameStatus;
 
 	StateStack mStateStack;

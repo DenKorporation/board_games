@@ -16,8 +16,9 @@ Application::Application()
 	  // : mWindow(sf::VideoMode(900, 600), "Fool"),
 	  mTextures(),
 	  mFonts(),
+	  mSounds(),
 	  mGameStatus(),
-	  mStateStack(State::Context(mWindow, mTextures, mFonts, mGameStatus)),
+	  mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mGameStatus)),
 	  mStatisticsText(),
 	  mStatisticsUpdateTime(),
 	  mStatisticsNumFrames(0)
@@ -26,6 +27,12 @@ Application::Application()
 	mWindow.setKeyRepeatEnabled(false);
 	mFonts.load(Fonts::Main, getFilePath(Fonts::Main));
 	mFonts.load(Fonts::Label, getFilePath(Fonts::Label));
+
+	mSounds.load(Sounds::CardSelect, getFilePath(Sounds::CardSelect));
+	mSounds.load(Sounds::Error, getFilePath(Sounds::Error));
+	mSounds.load(Sounds::ButtonSelect, getFilePath((Sounds::ButtonSelect)));
+	mSounds.load(Sounds::Shuffle, getFilePath(Sounds::Shuffle));
+	mSounds.load(Sounds::CardFlip, getFilePath(Sounds::CardFlip));
 
 	mTextures.load(Textures::Global::Background, getFilePath(Textures::Global::Background));
 

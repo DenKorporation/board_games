@@ -6,8 +6,10 @@
 
 #include <stdexcept>
 
-Card::Card(Suit suit, Rank rank, const TextureHolder &textures) : mSuit(suit), mRank(rank), misFaceSide(true), mIsSelected(false)
+Card::Card(Suit suit, Rank rank, const TextureHolder &textures, SoundHolder &sounds) : mSuit(suit), mRank(rank), misFaceSide(true), mIsSelected(false)
 {
+	mSelectedSound.setBuffer(sounds.get(Sounds::CardSelect));
+
 	mFrontFaceSprite.setTexture(textures.get(Textures::ID((Textures::Global::ID)suit, (Textures::Local::ID)rank)));
 	mReverseFaceSprite.setTexture(textures.get(Textures::ID((Textures::Global::ReverseFace))));
 	centerOrigin(mFrontFaceSprite);
@@ -75,6 +77,7 @@ void Card::select()
 	mIsSelected = true;
 	mFrontFaceSprite.setPosition(0.f, -0.3f * getGlobalBounds().height);
 	mReverseFaceSprite.setPosition(0.f, -0.3f * getGlobalBounds().height);
+	mSelectedSound.play();
 }
 
 void Card::deselect()

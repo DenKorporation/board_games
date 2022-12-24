@@ -10,6 +10,8 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include <stdexcept>
+
 GameEndState::GameEndState(StateStack &stack, Context context)
 	: State(stack, context),
 	  mSceneGraph(),
@@ -31,23 +33,32 @@ GameEndState::GameEndState(StateStack &stack, Context context)
 	mSceneGraph.attachChild(std::move(GUIMenu));
 
 	GUI::Label::Ptr label(new GUI::Label("", *context.fonts, Fonts::Main));
+	Musics::ID curTheme;
 	switch (getContext().gameStatus->getCurrentStatus())
 	{
 	case GameStatus::Draw:
 		label->setText("Draw");
+		curTheme = Musics::DrawTheme;
 		break;
 	case GameStatus::PlayerWon:
 		label->setText("You win");
+		curTheme = Musics::VictoryTheme;
 		break;
 	case GameStatus::EnemyWon:
 		label->setText("Game Over");
+		curTheme = Musics::LoseTheme;
 		break;
 	}
+	if (!mGameEndTheme.openFromFile(getFilePath(curTheme)))
+	{
+		throw std::runtime_error("Fail to open music mGameEndTheme.openFromFile : " + getFilePath(curTheme));
+	}
+
 	label->setFontSize((unsigned int)menuSize.y / 3);
 	label->setPosition(0.f, -menuSize.y / 4.f);
 	mGUIContainer->attachChild(std::move(label));
 
-	GUI::Button::Ptr newGameButton(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr newGameButton(new GUI::Button(*context.fonts, *context.sounds));
 	newGameButton->setPosition(-menuSize.x / 4.f, menuSize.y / 4.f);
 	newGameButton->setSize(sf::Vector2f(menuSize.x / 3.f, menuSize.y / 4.f));
 	newGameButton->setText("NEW GAME");
@@ -61,7 +72,7 @@ GameEndState::GameEndState(StateStack &stack, Context context)
 		requestStackPush(States::Game); });
 	mGUIContainer->attachChild(std::move(newGameButton));
 
-	GUI::Button::Ptr mainMenuButton(new GUI::Button(*context.fonts));
+	GUI::Button::Ptr mainMenuButton(new GUI::Button(*context.fonts, *context.sounds));
 	mainMenuButton->setPosition(menuSize.x / 4.f, menuSize.y / 4.f);
 	mainMenuButton->setSize(sf::Vector2f(menuSize.x / 3.f, menuSize.y / 4.f));
 	mainMenuButton->setText("TO MAIN MENU");
@@ -73,6 +84,8 @@ GameEndState::GameEndState(StateStack &stack, Context context)
 								{ 	requestStackClear();
 									requestStackPush(States::Menu); });
 	mGUIContainer->attachChild(std::move(mainMenuButton));
+
+	mGameEndTheme.play();
 }
 
 void GameEndState::draw()
