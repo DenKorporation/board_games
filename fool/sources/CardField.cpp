@@ -127,7 +127,7 @@ std::vector<Card *> CardField::getDefenseCards()
 
 std::vector<Animation *> CardField::clearFields(SceneNode *destination, const SoundHolder &sounds)
 {
-	sf::Time animationTime = sf::seconds(1.f);
+	sf::Time animationTime = sf::seconds(0.5f);
 	// if (dynamic_cast<CardGroup *>(destination) != nullptr)
 	// {
 	// 	animationTime = sf::seconds(0.5f);

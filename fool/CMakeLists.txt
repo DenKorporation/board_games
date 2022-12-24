@@ -45,6 +45,13 @@ target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-window-d.lib)
 target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-system-d.lib)
 target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/freeglut.lib)
 
+# target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-audio.lib)
+# # target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-network.lib)
+# target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-graphics.lib)
+# target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-window.lib)
+# target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/sfml-system.lib)
+# # target_link_libraries(fool ${CMAKE_SOURCE_DIR}/lib/freeglut.lib)
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET fool PROPERTY CXX_STANDARD 20)
 endif()

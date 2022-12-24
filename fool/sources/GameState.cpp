@@ -130,12 +130,12 @@ GameState::GameState(StateStack &stack, Context context)
 	{
 		Card::Ptr playerCard = mCardDeck->popCard();
 		mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
-											playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f), *context.sounds));
+											playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(0.5f), *context.sounds));
 		mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(i * 0.2f));
 		mSceneGraph.attachChild(std::move(playerCard));
 		Card::Ptr enemyCard = mCardDeck->popCard();
 		mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
-											enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f), *context.sounds));
+											enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(0.5f), *context.sounds));
 		mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(0.1f + i * 0.2f));
 		mSceneGraph.attachChild(std::move(enemyCard));
 	}
@@ -229,7 +229,7 @@ bool GameState::update(sf::Time dt)
 				}
 				Card::Ptr card = mPlayerCards->getCard(*result);
 				mAnimations.push_back(new Animation(card.get(), &mSceneGraph, static_cast<SceneNode *>(mCardField), type,
-													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(1.f), *getContext().sounds));
+													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(0.5f), *getContext().sounds));
 				mSceneGraph.attachChild(std::move(card));
 
 				if (!mTakesConfirmation)
@@ -333,7 +333,7 @@ bool GameState::update(sf::Time dt)
 				}
 				Card::Ptr card = mEnemyCards->getCard(*result);
 				mAnimations.push_back(new Animation(card.get(), &mSceneGraph, static_cast<SceneNode *>(mCardField), type,
-													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(1.f), *getContext().sounds));
+													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(0.5f), *getContext().sounds));
 				mSceneGraph.attachChild(std::move(card));
 				if (mTakesConfirmation)
 				{
@@ -426,7 +426,7 @@ bool GameState::update(sf::Time dt)
 					}
 					Card::Ptr playerCard = mCardDeck->popCard();
 					mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
-														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f), *getContext().sounds));
+														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(0.5f), *getContext().sounds));
 					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
 					mSceneGraph.attachChild(std::move(playerCard));
 					commonCounter++;
@@ -439,7 +439,7 @@ bool GameState::update(sf::Time dt)
 					}
 					Card::Ptr enemyCard = mCardDeck->popCard();
 					mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
-														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f), *getContext().sounds));
+														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(0.5f), *getContext().sounds));
 					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
 					mSceneGraph.attachChild(std::move(enemyCard));
 					commonCounter++;
@@ -455,7 +455,7 @@ bool GameState::update(sf::Time dt)
 					}
 					Card::Ptr enemyCard = mCardDeck->popCard();
 					mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
-														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f), *getContext().sounds));
+														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(0.5f), *getContext().sounds));
 					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
 					mSceneGraph.attachChild(std::move(enemyCard));
 					commonCounter++;
@@ -468,7 +468,7 @@ bool GameState::update(sf::Time dt)
 					}
 					Card::Ptr playerCard = mCardDeck->popCard();
 					mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
-														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f), *getContext().sounds));
+														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(0.5f), *getContext().sounds));
 					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
 					mSceneGraph.attachChild(std::move(playerCard));
 					commonCounter++;
