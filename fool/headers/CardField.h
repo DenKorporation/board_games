@@ -7,6 +7,8 @@
 
 #include <vector>
 
+class Animation;
+
 class CardField : public SceneNode
 {
 public:
@@ -30,8 +32,8 @@ public:
 	std::vector<Card *> getDefenseCards();
 	int getNumberOfAttackCards() const;
 	int getNumberOfDefenseCards() const;
-	void clearFields(CardGroup *destination);
-	void clearFields(CardPile *destination);
+	std::vector<Animation *> clearFields(SceneNode *destination);
+	sf::Vector2f getPlace(Type type, Card *card);
 
 private:
 	sf::Vector2f getWorldSize();

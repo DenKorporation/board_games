@@ -14,6 +14,7 @@
 #include "CardGroup.h"
 #include "CardPile.h"
 #include "CardField.h"
+#include "Animation.h"
 
 #include <vector>
 
@@ -41,7 +42,10 @@ private:
 
 	AI mAI;
 
+	std::vector<Animation *> mAnimations;
+
 	sf::Time elapsedTime;
+	sf::Time mLabelElapsedTime;
 
 	SceneNode mSceneGraph;
 	CardDeck *mCardDeck;
@@ -60,4 +64,5 @@ private:
 	Card::Suit mTrump;
 
 	bool mAvailableSelection;
+	bool mTakesConfirmation;
 };

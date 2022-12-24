@@ -11,7 +11,9 @@ GameState::GameState(StateStack &stack, Context context)
 	: State(stack, context),
 	  mTextures(),
 	  mSceneGraph(),
-	  mPlayerAction(AI::None)
+	  mPlayerAction(AI::None),
+	  mAvailableSelection(true),
+	  mTakesConfirmation(false)
 {
 	for (Card::Suit suit = Card::Diamonds; suit <= Card::Spades; suit = Card::Suit((int)suit + 1))
 	{
@@ -70,34 +72,6 @@ GameState::GameState(StateStack &stack, Context context)
 	mEnemyCards->setPosition(currentWindowSize.x / 2.f, cardCurrentSize.y * 0.6f);
 	mEnemyCards->setLocalSize(sf::Vector2f(currentWindowSize.x / 2.f, cardCurrentSize.y));
 
-	// Deal of cards
-	for (size_t i = 0; i < 6; i++)
-	{
-		mPlayerCards->pushCard(mCardDeck->popCard());
-		mEnemyCards->pushCard(mCardDeck->popCard());
-	}
-
-	Card::Rank playerMinTrump, enemyMinTrump;
-
-	if (mEnemyCards->getMinimumTrump(enemyMinTrump))
-	{
-		if (mPlayerCards->getMinimumTrump(playerMinTrump) && (playerMinTrump < enemyMinTrump))
-		{
-			mCurrentDefender = Enemy;
-			mCurrentStatus = PlayerTurn;
-		}
-		else
-		{
-			mCurrentDefender = Player;
-			mCurrentStatus = EnemyTurn;
-		}
-	}
-	else
-	{
-		mCurrentDefender = Enemy;
-		mCurrentStatus = PlayerTurn;
-	}
-
 	CardPile::Ptr cardPile(new CardPile());
 	mCardPile = cardPile.get();
 	cardPile->setPosition(currentWindowSize.x - cardCurrentSize.x * 0.7f, cardCurrentSize.y * 0.7f);
@@ -130,12 +104,36 @@ GameState::GameState(StateStack &stack, Context context)
 	mGUIContainer->attachChild(std::move(rightBtn));
 	mRightButton->setPosition(currentWindowSize.x / 3.f, currentWindowSize.y - cardCurrentSize.y * 0.6f);
 	mRightButton->setSize(sf::Vector2f(currentWindowSize.x / 8.f, cardCurrentSize.y * 0.8f));
-	mRightButton->setNormalStyle(GUI::Button::Style(cardCurrentSize.y * 0.3f, sf::Color::White, sf::Color(105, 105, 105, 150),
+	mRightButton->setNormalStyle(GUI::Button::Style(cardCurrentSize.y * 0.25f, sf::Color::White, sf::Color(105, 105, 105, 150),
 													sf::Color::Black, 3.f));
-	mRightButton->setSelectedStyle(GUI::Button::Style(cardCurrentSize.y * 0.3f, sf::Color::Red, sf::Color(105, 105, 105, 150),
+	mRightButton->setSelectedStyle(GUI::Button::Style(cardCurrentSize.y * 0.25f, sf::Color::Red, sf::Color(105, 105, 105, 150),
 													  sf::Color::Black, 3.f));
 
+	GUI::Label::Ptr mainLabel(new GUI::Label("", *context.fonts, Fonts::Main));
+	mMainLabel = mainLabel.get();
+	mainLabel->setFontSize((unsigned int)currentWindowSize.y / 12);
+	mainLabel->setPosition(0.f, currentWindowSize.y / 2.f);
+	mainLabel->setOutlineThickness(3.f);
+	// mainLabel->setFillColor(sf::Color(200, 200, 200));
+	mGUIContainer->attachChild(std::move(mainLabel));
+
+	mCurrentStatus = DealCards;
 	context.gameStatus->setCurrentStatus(GameStatus::InGame);
+
+	// Deal of cards
+	for (size_t i = 0; i < 6; i++)
+	{
+		Card::Ptr playerCard = mCardDeck->popCard();
+		mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
+											playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f)));
+		mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(i * 0.2f));
+		mSceneGraph.attachChild(std::move(playerCard));
+		Card::Ptr enemyCard = mCardDeck->popCard();
+		mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
+											enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f)));
+		mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(0.1f + i * 0.2f));
+		mSceneGraph.attachChild(std::move(enemyCard));
+	}
 }
 
 GameState::~GameState()
@@ -165,184 +163,374 @@ void GameState::draw()
 
 bool GameState::update(sf::Time dt)
 {
-	switch (mCurrentStatus)
+	mLabelElapsedTime += dt;
+	if (mLabelElapsedTime > sf::seconds(2.f))
 	{
-	case PlayerTurn:
+		mMainLabel->setText("");
+		mMainLabel->setFillColor(sf::Color::White);
+	}
+
+	if (!mAnimations.empty())
 	{
-		Card *result;
-		CardField::Type type = (mCurrentDefender == Player) ? CardField::Defense : CardField::Attack;
-		switch (mPlayerAction)
+		for (auto it = mAnimations.begin(); it != mAnimations.end();)
 		{
-		case AI::PutCard:
-			result = mPlayerCards->getSelectedCard();
-			if (!mCardField->checkCard(result, type))
+			if ((*it)->update(dt))
+			{
+				(*it)->release();
+				it = mAnimations.erase(it);
+			}
+			else
+			{
+				it++;
+			}
+		}
+	}
+	else
+	{
+
+		switch (mCurrentStatus)
+		{
+		case PlayerTurn:
+		{
+			Card *result;
+			CardField::Type type = (mCurrentDefender == Player) ? CardField::Defense : CardField::Attack;
+
+			if (type == CardField::Attack && mPlayerAction == AI::PutCard)
+			{
+				if (mCardField->getNumberOfAttackCards() >= 6 ||
+					mCardField->getNumberOfAttackCards() - mCardField->getNumberOfDefenseCards() >= mEnemyCards->getNumberOfCards())
+				{
+					mPlayerAction = AI::None;
+					mMainLabel->setText("Incorrect action");
+					mMainLabel->setFillColor(sf::Color::Red);
+					mLabelElapsedTime = sf::Time::Zero;
+				}
+			}
+
+			switch (mPlayerAction)
+			{
+			case AI::PutCard:
+			{
+				result = mPlayerCards->getSelectedCard();
+				if (!mCardField->checkCard(result, type))
+				{
+					mMainLabel->setText("Incorrect action");
+					mMainLabel->setFillColor(sf::Color::Red);
+					mLabelElapsedTime = sf::Time::Zero;
+					break;
+				}
+				Card::Ptr card = mPlayerCards->getCard(*result);
+				mAnimations.push_back(new Animation(card.get(), &mSceneGraph, static_cast<SceneNode *>(mCardField), type,
+													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(0.5f)));
+				mSceneGraph.attachChild(std::move(card));
+
+				if (!mTakesConfirmation)
+				{
+					if (type == CardField::Attack)
+					{
+						mCurrentStatus = EnemyTurn;
+						mRightButton->clearTextAndCallback();
+						elapsedTime = sf::Time::Zero;
+					}
+					else if (mEnemyCards->getNumberOfCards() == 0)
+					{
+						mLeftButton->setText("Take it");
+						mLeftButton->setCallback([this]()
+												 { mPlayerAction = AI::TakeCards; });
+						mRightButton->setText("Discard");
+						mRightButton->setCallback([this]()
+												  { mPlayerAction = AI::DiscardCards; });
+						mAvailableSelection = false;
+					}
+					else
+					{
+						mCurrentStatus = EnemyTurn;
+						mLeftButton->clearTextAndCallback();
+						elapsedTime = sf::Time::Zero;
+					}
+				}
+				break;
+			}
+			case AI::TakeCards:
+				if (mPlayerCards->getNumberOfCards() == 0)
+				{
+					std::vector<Animation *> temp = mCardField->clearFields(mPlayerCards);
+					mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
+					mCurrentDefender = Player;
+					mCurrentStatus = ClearField;
+				}
+				else
+				{
+					mTakesConfirmation = true;
+					mLeftButton->clearTextAndCallback();
+					mRightButton->clearTextAndCallback();
+					mCurrentStatus = EnemyTurn;
+				}
+				elapsedTime = sf::Time::Zero;
+				break;
+			case AI::Pass:
+				if (mTakesConfirmation)
+				{
+					std::vector<Animation *> temp = mCardField->clearFields(mEnemyCards);
+					mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
+					mCurrentDefender = Enemy;
+					mCurrentStatus = ClearField;
+					mTakesConfirmation = false;
+				}
+				else
+				{
+					mCurrentStatus = EnemyTurn;
+					mRightButton->clearTextAndCallback();
+				}
+				elapsedTime = sf::Time::Zero;
+				break;
+			case AI::DiscardCards:
+				std::vector<Animation *> temp = mCardField->clearFields(mCardPile);
+				mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
+				mLeftButton->clearTextAndCallback();
+				mRightButton->clearTextAndCallback();
+				mCurrentStatus = ClearField;
+				mCurrentDefender = Enemy;
+			}
+			mPlayerAction = AI::None;
+			break;
+		}
+		case EnemyTurn:
+		{
+			elapsedTime += dt;
+			if (elapsedTime < sf::seconds(1.5f))
 			{
 				break;
 			}
-			mCardField->pushCard(mPlayerCards->getCard(*result), type);
-			mCurrentStatus = EnemyTurn;
-			if (type == CardField::Attack)
+			Card *result;
+			CardField::Type type = (mCurrentDefender == Enemy) ? CardField::Defense : CardField::Attack;
+			AI::Action curAction = mAI.getCard(type, result, mEnemyCards->getCards(), mCardField->getAttackCards(), mCardField->getDefenseCards());
+
+			if (type == CardField::Attack && curAction == AI::PutCard)
 			{
-				mRightButton->clearTextAndCallback();
+				if (mCardField->getNumberOfAttackCards() >= 6 ||
+					mCardField->getNumberOfAttackCards() - mCardField->getNumberOfDefenseCards() >= mPlayerCards->getNumberOfCards())
+				{
+					curAction = AI::Pass;
+				}
+			}
+
+			switch (curAction)
+			{
+			case AI::PutCard:
+			{
+				if (!mCardField->checkCard(result, type))
+				{
+					throw std::runtime_error("incorrect work of AI");
+				}
+				Card::Ptr card = mEnemyCards->getCard(*result);
+				mAnimations.push_back(new Animation(card.get(), &mSceneGraph, static_cast<SceneNode *>(mCardField), type,
+													card->getPosition(), mCardField->getPlace(type, card.get()), sf::seconds(0.5f)));
+				mSceneGraph.attachChild(std::move(card));
+				if (mTakesConfirmation)
+				{
+					elapsedTime = sf::Time::Zero;
+				}
+				else
+				{
+					if (type == CardField::Attack)
+					{
+						mLeftButton->setText("Take it");
+						mLeftButton->setCallback([this]()
+												 { mPlayerAction = AI::TakeCards; });
+						mCurrentStatus = PlayerTurn;
+					}
+					else if (mPlayerCards->getNumberOfCards() == 0)
+					{
+						elapsedTime = sf::Time::Zero;
+					}
+					else
+					{
+						mRightButton->setText("Pass");
+						mRightButton->setCallback([this]()
+												  { mPlayerAction = AI::Pass; });
+						mCurrentStatus = PlayerTurn;
+					}
+				}
+				break;
+			}
+			case AI::TakeCards:
+				mMainLabel->setText("Enemy take cards");
+				mLabelElapsedTime = sf::Time::Zero;
+				if (mEnemyCards->getNumberOfCards() == 0)
+				{
+					std::vector<Animation *> temp = mCardField->clearFields(mEnemyCards);
+					mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
+					mCurrentDefender = Enemy;
+					mCurrentStatus = ClearField;
+				}
+				else
+				{
+					mTakesConfirmation = true;
+					mRightButton->setText("Pass");
+					mRightButton->setCallback([this]()
+											  { mPlayerAction = AI::Pass; });
+					mCurrentStatus = PlayerTurn;
+				}
+				break;
+			case AI::Pass:
+				if (mTakesConfirmation)
+				{
+					std::vector<Animation *> temp = mCardField->clearFields(mPlayerCards);
+					mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
+					mCurrentDefender = Player;
+					mCurrentStatus = ClearField;
+					mTakesConfirmation = false;
+				}
+				else
+				{
+
+					mLeftButton->setText("Take it");
+					mLeftButton->setCallback([this]()
+											 { mPlayerAction = AI::TakeCards; });
+					mRightButton->setText("Discard");
+					mRightButton->setCallback([this]()
+											  { mPlayerAction = AI::DiscardCards; });
+					mAvailableSelection = false;
+					mCurrentStatus = PlayerTurn;
+				}
+				break;
+			case AI::DiscardCards:
+				std::vector<Animation *> temp = mCardField->clearFields(mCardPile);
+				mAnimations.insert(mAnimations.end(), temp.begin(), temp.end());
+				mCurrentStatus = ClearField;
+				mCurrentDefender = Player;
+			}
+
+			break;
+		}
+		case ClearField:
+		{
+			// deal cards
+			int commonCounter = 0;
+			if (mCurrentDefender == Player)
+			{
+				for (int count = mPlayerCards->getNumberOfCards(); count < 6; count++)
+				{
+					if (mCardDeck->isEmpty())
+					{
+						break;
+					}
+					Card::Ptr playerCard = mCardDeck->popCard();
+					mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
+														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f)));
+					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
+					mSceneGraph.attachChild(std::move(playerCard));
+					commonCounter++;
+				}
+				for (int count = mEnemyCards->getNumberOfCards(); count < 6; count++)
+				{
+					if (mCardDeck->isEmpty())
+					{
+						break;
+					}
+					Card::Ptr enemyCard = mCardDeck->popCard();
+					mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
+														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f)));
+					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
+					mSceneGraph.attachChild(std::move(enemyCard));
+					commonCounter++;
+				}
 			}
 			else
 			{
-				mLeftButton->clearTextAndCallback();
+				for (int count = mEnemyCards->getNumberOfCards(); count < 6; count++)
+				{
+					if (mCardDeck->isEmpty())
+					{
+						break;
+					}
+					Card::Ptr enemyCard = mCardDeck->popCard();
+					mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
+														enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(1.f)));
+					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
+					mSceneGraph.attachChild(std::move(enemyCard));
+					commonCounter++;
+				}
+				for (int count = mPlayerCards->getNumberOfCards(); count < 6; count++)
+				{
+					if (mCardDeck->isEmpty())
+					{
+						break;
+					}
+					Card::Ptr playerCard = mCardDeck->popCard();
+					mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
+														playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(1.f)));
+					mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(commonCounter * 0.2f));
+					mSceneGraph.attachChild(std::move(playerCard));
+					commonCounter++;
+				}
 			}
-			elapsedTime = sf::Time::Zero;
-			break;
-		case AI::TakeCards:
-			mCardField->clearFields(mPlayerCards);
-			mCurrentDefender = Player;
-			mCurrentStatus = ClearField;
-			mLeftButton->clearTextAndCallback();
-			mRightButton->clearTextAndCallback();
-			elapsedTime = sf::Time::Zero;
-			break;
-		case AI::Pass:
-			mCurrentStatus = EnemyTurn;
-			mRightButton->clearTextAndCallback();
-			elapsedTime = sf::Time::Zero;
-			break;
-		case AI::DiscardCards:
-			mCardField->clearFields(mCardPile);
-			mLeftButton->clearTextAndCallback();
-			mRightButton->clearTextAndCallback();
-			mCurrentStatus = ClearField;
-			elapsedTime = sf::Time::Zero;
-			mCurrentDefender = Enemy;
-		}
-		mPlayerAction = AI::None;
-		break;
-	}
-	case EnemyTurn:
-	{
-		elapsedTime += dt;
-		if (elapsedTime < sf::seconds(1.f))
-		{
-			break;
-		}
-		Card *result;
-		CardField::Type type = (mCurrentDefender == Enemy) ? CardField::Defense : CardField::Attack;
-		switch (mAI.getCard(type, result, mEnemyCards->getCards(), mCardField->getAttackCards(), mCardField->getDefenseCards()))
-		{
-		case AI::PutCard:
-			if (!mCardField->checkCard(result, type))
+
+			if (mPlayerCards->getNumberOfCards() == 0 || mEnemyCards->getNumberOfCards() == 0)
 			{
-				throw std::runtime_error("incorrect work of AI");
-			}
-			if (type == CardField::Attack)
-			{
-				mLeftButton->setText("Take it");
-				mLeftButton->setCallback([this]()
-										 { mPlayerAction = AI::TakeCards; });
+				if (mPlayerCards->getNumberOfCards() == 0 && mEnemyCards->getNumberOfCards() != 0)
+				{
+					getContext().gameStatus->setCurrentStatus(GameStatus::PlayerWon);
+					requestStackPush(States::GameEnd);
+				}
+				else if (mPlayerCards->getNumberOfCards() != 0 && mEnemyCards->getNumberOfCards() == 0)
+				{
+					getContext().gameStatus->setCurrentStatus(GameStatus::EnemyWon);
+					requestStackPush(States::GameEnd);
+				}
+				else
+				{
+					getContext().gameStatus->setCurrentStatus(GameStatus::Draw);
+					requestStackPush(States::GameEnd);
+				}
 			}
 			else
 			{
-				mRightButton->setText("Pass");
-				mRightButton->setCallback([this]()
-										  { mPlayerAction = AI::Pass; });
+				if (mCurrentDefender == Player)
+				{
+					mCurrentStatus = EnemyTurn;
+					mMainLabel->setText("You are defender");
+				}
+				else
+				{
+					mCurrentStatus = PlayerTurn;
+					mMainLabel->setText("Enemy is defender");
+				}
 			}
-
-			mCardField->pushCard(mEnemyCards->getCard(*result), type);
-			mCurrentStatus = PlayerTurn;
-			break;
-		case AI::TakeCards:
-			mCardField->clearFields(mEnemyCards);
-			mCurrentDefender = Enemy;
-			mCurrentStatus = ClearField;
-			elapsedTime = sf::Time::Zero;
-			break;
-		case AI::Pass:
-			mLeftButton->setText("Take it");
-			mLeftButton->setCallback([this]()
-									 { mPlayerAction = AI::TakeCards; });
-			mRightButton->setText("Discard");
-			mRightButton->setCallback([this]()
-									  { mPlayerAction = AI::DiscardCards; });
-
-			mCurrentStatus = PlayerTurn;
-			break;
-		case AI::DiscardCards:
-			mCardField->clearFields(mCardPile);
-			mCurrentStatus = ClearField;
-			elapsedTime = sf::Time::Zero;
-			mCurrentDefender = Player;
-		}
-
-		break;
-	}
-	case ClearField:
-	{
-		elapsedTime += dt;
-		if (elapsedTime < sf::seconds(1.f))
-		{
+			mLabelElapsedTime = sf::Time::Zero;
+			mAvailableSelection = true;
 			break;
 		}
+		case DealCards:
+		{
+			Card::Rank playerMinTrump, enemyMinTrump;
 
-		// deal cards
-		if (mCurrentDefender == Player)
-		{
-			for (int count = mPlayerCards->getNumberOfCards(); count < 6; count++)
+			if (mPlayerCards->getMinimumTrump(enemyMinTrump))
 			{
-				if (mCardDeck->isEmpty())
+				if (mPlayerCards->getMinimumTrump(playerMinTrump) && (playerMinTrump < enemyMinTrump))
 				{
-					break;
+					mCurrentDefender = Enemy;
+					mCurrentStatus = PlayerTurn;
+					mMainLabel->setText("Your turn");
 				}
-				mPlayerCards->pushCard(mCardDeck->popCard());
-			}
-			for (int count = mEnemyCards->getNumberOfCards(); count < 6; count++)
-			{
-				if (mCardDeck->isEmpty())
+				else
 				{
-					break;
+					mCurrentDefender = Player;
+					mCurrentStatus = EnemyTurn;
+					mMainLabel->setText("the enemy's turn");
 				}
-				mEnemyCards->pushCard(mCardDeck->popCard());
-			}
-		}
-		else
-		{
-			for (int count = mEnemyCards->getNumberOfCards(); count < 6; count++)
-			{
-				if (mCardDeck->isEmpty())
-				{
-					break;
-				}
-				mEnemyCards->pushCard(mCardDeck->popCard());
-			}
-			for (int count = mPlayerCards->getNumberOfCards(); count < 6; count++)
-			{
-				if (mCardDeck->isEmpty())
-				{
-					break;
-				}
-				mPlayerCards->pushCard(mCardDeck->popCard());
-			}
-		}
-
-		if (mPlayerCards->getNumberOfCards() == 0 || mEnemyCards->getNumberOfCards() == 0)
-		{
-			if (mPlayerCards->getNumberOfCards() == 0 && mEnemyCards->getNumberOfCards() != 0)
-			{
-				getContext().gameStatus->setCurrentStatus(GameStatus::PlayerWon);
-				requestStackPush(States::GameEnd);
-			}
-			else if (mPlayerCards->getNumberOfCards() != 0 && mEnemyCards->getNumberOfCards() == 0)
-			{
-				getContext().gameStatus->setCurrentStatus(GameStatus::EnemyWon);
-				requestStackPush(States::GameEnd);
 			}
 			else
 			{
-				getContext().gameStatus->setCurrentStatus(GameStatus::Draw);
-				requestStackPush(States::GameEnd);
+				mCurrentDefender = Player;
+				mCurrentStatus = EnemyTurn;
+				mMainLabel->setText("the enemy's turn");
 			}
+			mLabelElapsedTime = sf::Time::Zero;
+			break;
 		}
-
-		mCurrentStatus = (mCurrentDefender == Player) ? EnemyTurn : PlayerTurn;
-		elapsedTime = sf::Time::Zero;
-		break;
-	}
+		}
 	}
 	return true;
 }
@@ -362,12 +550,15 @@ bool GameState::handleEvent(const sf::Event &event)
 	if (mCurrentStatus == PlayerTurn)
 	{
 		mGUIContainer->handleEvent(event);
-		mPlayerCards->handleEvent(event);
-		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+		if (mAvailableSelection)
 		{
-			if (mPlayerCards->hasSelection())
+			mPlayerCards->handleEvent(event);
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 			{
-				mPlayerAction = AI::PutCard;
+				if (mPlayerCards->hasSelection())
+				{
+					mPlayerAction = AI::PutCard;
+				}
 			}
 		}
 	}

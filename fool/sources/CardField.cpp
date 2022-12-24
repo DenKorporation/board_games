@@ -1,4 +1,5 @@
 #include "CardField.h"
+#include "Animation.h"
 
 #include "stdexcept"
 CardField::CardField(Card::Suit trump)
@@ -91,6 +92,29 @@ int CardField::getNumberOfDefenseCards() const
 	return mDefenseCards.size();
 }
 
+sf::Vector2f CardField::getPlace(Type type, Card *card)
+{
+	sf::FloatRect cardBounds = card->getGlobalBounds();
+	sf::Vector2f areaSize = getWorldSize();
+
+	sf::Vector2f position = sf::Vector2f(-areaSize.x * 2.5f / 6, 0.f);
+	float step = areaSize.x / 6.f;
+	if (type == CardField::Attack)
+	{
+		position.x += step * getNumberOfAttackCards();
+		position.x += -cardBounds.width * 0.05f;
+		position.y += -cardBounds.height * 0.05f;
+	}
+	else
+	{
+		position.x += step * getNumberOfDefenseCards();
+		position.x += cardBounds.width * 0.05f;
+		position.y += cardBounds.height * 0.05f;
+	}
+	position += getPosition();
+	return position;
+}
+
 std::vector<Card *> CardField::getAttackCards()
 {
 	return mAttackCards;
@@ -101,40 +125,36 @@ std::vector<Card *> CardField::getDefenseCards()
 	return mDefenseCards;
 }
 
-void CardField::clearFields(CardGroup *destination)
+std::vector<Animation *> CardField::clearFields(SceneNode *destination)
 {
-	for (auto card = mAttackCards.begin(); card != mAttackCards.end(); card++)
+	sf::Time animationTime = sf::seconds(1.f);
+	if (dynamic_cast<CardGroup *>(destination) != nullptr)
 	{
-		(*card)->move(getPosition());
-		Card::Ptr result(static_cast<Card *>(detachChild(**card).release()));
-		destination->pushCard(std::move(result));
+		animationTime = sf::seconds(0.5f);
 	}
-	mAttackCards.clear();
-	for (auto card = mDefenseCards.begin(); card != mDefenseCards.end(); card++)
-	{
-		(*card)->move(getPosition());
-		Card::Ptr result(static_cast<Card *>(detachChild(**card).release()));
-		destination->pushCard(std::move(result));
-	}
-	mDefenseCards.clear();
-}
 
-void CardField::clearFields(CardPile *destination)
-{
+	std::vector<Animation *> animations;
+	int count = 0;
 	for (auto card = mAttackCards.begin(); card != mAttackCards.end(); card++)
 	{
 		(*card)->move(getPosition());
-		Card::Ptr result(static_cast<Card *>(detachChild(**card).release()));
-		destination->pushCard(std::move(result));
+		animations.push_back(new Animation(*card, mParent, static_cast<SceneNode *>(destination), (*card)->getPosition(), destination->getPosition(), animationTime));
+		animations[animations.size() - 1]->setDelayTime(sf::seconds(0.1f * count));
+		count++;
+		mParent->attachChild(detachChild(**card));
 	}
 	mAttackCards.clear();
+	count = 0;
 	for (auto card = mDefenseCards.begin(); card != mDefenseCards.end(); card++)
 	{
 		(*card)->move(getPosition());
-		Card::Ptr result(static_cast<Card *>(detachChild(**card).release()));
-		destination->pushCard(std::move(result));
+		animations.push_back(new Animation(*card, mParent, static_cast<SceneNode *>(destination), (*card)->getPosition(), destination->getPosition(), animationTime));
+		animations[animations.size() - 1]->setDelayTime(sf::seconds(0.05f + 0.1f * count));
+		mParent->attachChild(detachChild(**card));
+		count++;
 	}
 	mDefenseCards.clear();
+	return animations;
 }
 
 sf::Vector2f CardField::getWorldSize()

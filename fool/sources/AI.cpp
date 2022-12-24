@@ -82,7 +82,7 @@ AI::Action AI::getCard(CardField::Type type, Card *&result, std::vector<Card *> 
 					availableCards.push_back(card);
 				}
 			}
-			if (rand() % (availableCards.size() * 4 + 1) == 0)
+			if (rand() % (availableCards.size() * 5 + 1) == 0)
 			{
 				return TakeCards;
 			}
@@ -91,7 +91,7 @@ AI::Action AI::getCard(CardField::Type type, Card *&result, std::vector<Card *> 
 		}
 		else
 		{
-			if (rand() % 20 == 0)
+			if (rand() % 100 == 0)
 			{
 				return TakeCards;
 			}
