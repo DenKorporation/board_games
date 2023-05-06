@@ -16,6 +16,7 @@ class CardDeck;
 namespace GUI
 {
 	class Container;
+	class List;
 }
 
 class SceneNode : public sf::Drawable, public sf::Transformable, private sf::NonCopyable
@@ -24,6 +25,7 @@ class SceneNode : public sf::Drawable, public sf::Transformable, private sf::Non
 	friend class CardField;
 	friend class CardDeck;
 	friend class GUI::Container;
+	friend class GUI::List;
 
 public:
 	typedef std::unique_ptr<SceneNode> Ptr;
@@ -35,7 +37,7 @@ public:
 	virtual Ptr detachChild(const SceneNode &node);
 
 	sf::Vector2f getWorldPosition() const;
-	sf::Transform getWorldTransform() const;
+	virtual sf::Transform getWorldTransform() const;
 
 	virtual void handleEvent(const sf::Event &event);
 

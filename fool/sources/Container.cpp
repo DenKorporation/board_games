@@ -23,6 +23,14 @@ namespace GUI
 	{
 		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 		{
+			for (auto &&element : mChildren)
+			{
+				if (element->getType() == Component::List)
+				{
+					element->handleEvent(event);
+				}
+			}
+
 			if (hasSelection())
 			{
 				switch (mChildren[mSelectedChild]->getType())
@@ -86,6 +94,13 @@ namespace GUI
 						break;
 					}
 				}
+			}
+		}
+		else
+		{
+			for (auto &&element : mChildren)
+			{
+				element->handleEvent(event);
 			}
 		}
 	}

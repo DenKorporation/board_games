@@ -7,6 +7,7 @@
 #include "PauseState.h"
 #include "StatisticState.h"
 #include "GameEndState.h"
+#include "MultiplayerConnectionState.h"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 144.f);
 
@@ -130,4 +131,5 @@ void Application::registerStates()
 	mStateStack.registerState<PauseState>(States::Pause);
 	mStateStack.registerState<StatisticState>(States::Statistic);
 	mStateStack.registerState<GameEndState>(States::GameEnd);
+	mStateStack.registerState<MultiplayerConnectionState>(States::MultiplayerConnection);
 }

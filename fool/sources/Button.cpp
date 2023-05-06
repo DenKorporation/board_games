@@ -4,8 +4,6 @@
 #include "SFML/Graphics/RenderStates.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 
-#include <iostream>
-
 namespace GUI
 {
 	Button::Style::Style(unsigned int fontSize = 16, sf::Color textColor = sf::Color(255, 255, 255), sf::Color fillColor = sf::Color(105, 105, 105),
@@ -102,7 +100,6 @@ namespace GUI
 		{
 			int x = event.mouseMove.x, y = event.mouseMove.y;
 			sf::FloatRect bounds = getWorldTransform().transformRect(mShape.getGlobalBounds());
-			// std::cout << "Begin\nLeft: " << bounds.left << "\nTop: " << bounds.top << "\nWidth: " << bounds.width << "\nHeight" << bounds.height << std::endl;
 			if ((x >= bounds.left) && (x <= bounds.left + bounds.width) &&
 				(y >= bounds.top) && (y <= bounds.top + bounds.height))
 			{

@@ -29,11 +29,15 @@ set(SOURCE_FILE
 	sources/CardField.cpp
 	sources/CardDeck.cpp
 	sources/CardPile.cpp
+	sources/Offset.cpp
 	sources/Component.cpp
 	sources/Container.cpp
 	sources/Button.cpp
 	sources/Label.cpp
 	sources/Animation.cpp
+	sources/List.cpp
+	sources/ListItem.cpp
+	sources/OnlineGameItem.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})

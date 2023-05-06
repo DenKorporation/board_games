@@ -14,6 +14,8 @@ namespace GUI
 		enum Type
 		{
 			Container,
+			List,
+			ListItem,
 			Label,
 			Button
 		};
