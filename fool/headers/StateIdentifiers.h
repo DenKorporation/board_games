@@ -6,6 +6,8 @@ namespace States
 	{
 		None,
 		Menu,
+		MultiplayerConnection,
+		MultiplayerGame,
 		Game,
 		Pause,
 		Statistic,

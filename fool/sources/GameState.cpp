@@ -203,7 +203,7 @@ bool GameState::update(sf::Time dt)
 
 			if (mPlayerAction == AI::PutCard && !mPlayerCards->hasSelection())
 			{
-				mPlayerAction == AI::None;
+				mPlayerAction = AI::None;
 			}
 
 			if (type == CardField::Attack && mPlayerAction == AI::PutCard)

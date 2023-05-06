@@ -38,6 +38,7 @@ set(SOURCE_FILE
 	sources/List.cpp
 	sources/ListItem.cpp
 	sources/OnlineGameItem.cpp
+	sources/MultiplayerConnectionState.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})

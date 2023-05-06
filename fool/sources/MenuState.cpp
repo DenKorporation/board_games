@@ -36,7 +36,7 @@ MenuState::MenuState(StateStack &stack, Context context)
 	mGUIContainer->attachChild(std::move(logo));
 
 	GUI::Container::Ptr GUIMenu(new GUI::Container);
-	GUIMenu->setPosition(0.f, winY * 3.f / 5.f);
+	GUIMenu->setPosition(0.f, winY * 2.5f / 5.f);
 
 	GUI::Button::Style normalStyle(winY / 20, sf::Color(255, 255, 255), sf::Color(105, 105, 105), sf::Color::Black, 1.f);
 	GUI::Button::Style selectedStyle(winY / 20, sf::Color::Red, sf::Color(105, 105, 105), sf::Color::Black, 1.f);
@@ -52,8 +52,20 @@ MenuState::MenuState(StateStack &stack, Context context)
 								requestStackPush(States::Game); });
 	GUIMenu->attachChild(std::move(playButton));
 
+	GUI::Button::Ptr onlineButton(new GUI::Button(*context.fonts, *context.sounds));
+	onlineButton->setPosition(0.f, (winY / 10.f) * 1.2f);
+	onlineButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
+	onlineButton->setText("Online");
+	onlineButton->setNormalStyle(normalStyle);
+	onlineButton->setSelectedStyle(selectedStyle);
+	onlineButton->setCallback([this]()
+							  {
+								requestStackPop(); 
+								requestStackPush(States::MultiplayerConnection); });
+	GUIMenu->attachChild(std::move(onlineButton));
+
 	GUI::Button::Ptr statisticButton(new GUI::Button(*context.fonts, *context.sounds));
-	statisticButton->setPosition(0.f, (winY / 10.f) * 1.2f);
+	statisticButton->setPosition(0.f, 2 * (winY / 10.f) * 1.2f);
 	statisticButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
 	statisticButton->setText("Statistic");
 	statisticButton->setNormalStyle(normalStyle);
@@ -65,7 +77,7 @@ MenuState::MenuState(StateStack &stack, Context context)
 	GUIMenu->attachChild(std::move(statisticButton));
 
 	GUI::Button::Ptr exitButton(new GUI::Button(*context.fonts, *context.sounds));
-	exitButton->setPosition(0.f, 2 * (winY / 10.f) * 1.2f);
+	exitButton->setPosition(0.f, 3 * (winY / 10.f) * 1.2f);
 	exitButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
 	exitButton->setText("Exit");
 	exitButton->setNormalStyle(normalStyle);
