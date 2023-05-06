@@ -1,2 +1,4 @@
 .vscode
 out
+.idea
+cmake-build-debug-visual-studio
