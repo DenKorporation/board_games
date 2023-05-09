@@ -17,10 +17,13 @@ namespace GUI
 
 		struct Style
 		{
-			Style(unsigned int fontSize, sf::Color textColor, sf::Color fillColor,
-				  sf::Color outlineColor, float outlineThickness);
-			unsigned int fontSize;
-			sf::Color textColor;
+			Style(unsigned int mainFontSize, sf::Color mainTextColor,
+				  unsigned int addFontSize, sf::Color addTextColor,
+				  sf::Color fillColor, sf::Color outlineColor, float outlineThickness);
+			unsigned int mainFontSize;
+			unsigned int addFontSize;
+			sf::Color mainTextColor;
+			sf::Color addTextColor;
 			sf::Color fillColor;
 			sf::Color outlineColor;
 			float outlineThickness;
@@ -36,7 +39,8 @@ namespace GUI
 		virtual void select();
 
 		void setData(std::string data);
-		void setText(const std::string &text);
+		void setName(const sf::String &text);
+		void setId(const std::string &text);
 		void setSize(sf::Vector2f size);
 
 		void applyNormalStyle();
@@ -65,6 +69,7 @@ namespace GUI
 		sf::Sound mSelectSound;
 
 		sf::RectangleShape mShape;
-		sf::Text mText;
+		sf::Text mTextName;
+		sf::Text mTextId;
 	};
 }

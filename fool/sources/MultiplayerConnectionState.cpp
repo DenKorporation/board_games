@@ -7,6 +7,7 @@
 #include "ResourceHolder.hpp"
 #include "SpriteNode.h"
 #include "ShapeNode.h"
+#include "ServerService.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -122,23 +123,26 @@ void MultiplayerConnectionState::initConnectionList()
 {
 	mConnectionList->detachAllListItem();
 
+	json data = ServerService::Receive();
+
 	unsigned int winX = getContext().window->getSize().x, winY = getContext().window->getSize().y;
 	sf::Vector2f buttonSize(winX / 5.f, winY / 10.f);
 
-	GUI::OnlineGameItem::Style normalStyle(GUI::OnlineGameItem::Style((unsigned int)buttonSize.y / 3u, sf::Color::White, sf::Color(105, 105, 105),
+	GUI::OnlineGameItem::Style normalStyle(GUI::OnlineGameItem::Style((unsigned int)buttonSize.y / 3u, sf::Color::White, (unsigned int)buttonSize.y / 6u, sf::Color::White, sf::Color(105, 105, 105),
 																	  sf::Color::Black, 3.f));
-	GUI::OnlineGameItem::Style selectedStyle(GUI::OnlineGameItem::Style((unsigned int)buttonSize.y / 3u, sf::Color::Green, sf::Color(105, 105, 105),
+	GUI::OnlineGameItem::Style selectedStyle(GUI::OnlineGameItem::Style((unsigned int)buttonSize.y / 3u, sf::Color::Green, (unsigned int)buttonSize.y / 6u, sf::Color::Green, sf::Color(105, 105, 105),
 																		sf::Color::Black, 3.f));
-	GUI::OnlineGameItem::Style hoverStyle(GUI::OnlineGameItem::Style((unsigned int)buttonSize.y / 3u, sf::Color::Red, sf::Color(105, 105, 105),
+	GUI::OnlineGameItem::Style hoverStyle(GUI::OnlineGameItem::Style((unsigned int)buttonSize.y / 3u, sf::Color::Red, (unsigned int)buttonSize.y / 6u, sf::Color::Red, sf::Color(105, 105, 105),
 																	 sf::Color::Black, 3.f));
 
-	for (size_t i = 0; i < 20; i++)
+	for (auto element : data)
 	{
 		GUI::OnlineGameItem::Ptr listItem(new GUI::OnlineGameItem(GUI::Offset(20, 20), *getContext().fonts, *getContext().sounds));
 
-		listItem->setData("abracadabra");
-		listItem->setText("abracadabra");
-		listItem->setSize(buttonSize);
+		listItem->setData(element["Id"]);
+		listItem->setName(sf::String(utf8_to_wstring(element["Name"])));
+		listItem->setId(element["Id"]);
+		listItem->setSize(buttonSize * 1.5f);
 		listItem->setNormalStyle(normalStyle);
 		listItem->setHoverStyle(hoverStyle);
 		listItem->setSelectedStyle(selectedStyle);

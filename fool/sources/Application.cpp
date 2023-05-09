@@ -28,6 +28,7 @@ Application::Application()
 	mWindow.setKeyRepeatEnabled(false);
 	mFonts.load(Fonts::Main, getFilePath(Fonts::Main));
 	mFonts.load(Fonts::Label, getFilePath(Fonts::Label));
+	mFonts.load(Fonts::Russian, getFilePath(Fonts::Russian));
 
 	mSounds.load(Sounds::CardSelect, getFilePath(Sounds::CardSelect));
 	mSounds.load(Sounds::Error, getFilePath(Sounds::Error));

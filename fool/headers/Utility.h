@@ -12,6 +12,9 @@
 
 const std::string STATISTICPATH = "statistic.txt";
 
+std::wstring utf8_to_wstring(const std::string &str);
+std::string wstring_to_utf8(const std::wstring &str);
+
 std::string getFilePath(Card::Suit suit, Card::Rank rank);
 std::string getFilePath(Textures::Global::ID global, Textures::Local::ID local);
 std::string getFilePath(Textures::Global::ID global);

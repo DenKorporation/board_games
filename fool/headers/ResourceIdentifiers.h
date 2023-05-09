@@ -106,7 +106,8 @@ namespace Fonts
 	enum ID
 	{
 		Main,
-		Label
+		Label,
+		Russian
 	};
 }
 

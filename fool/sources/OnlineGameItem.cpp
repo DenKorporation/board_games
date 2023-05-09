@@ -6,10 +6,13 @@
 
 namespace GUI
 {
-	OnlineGameItem::Style::Style(unsigned int fontSize = 16, sf::Color textColor = sf::Color(255, 255, 255), sf::Color fillColor = sf::Color(105, 105, 105),
-								 sf::Color outlineColor = sf::Color(0, 0, 0), float outlineThickness = 1)
-		: fontSize(fontSize),
-		  textColor(textColor),
+	OnlineGameItem::Style::Style(unsigned int mainFontSize = 16, sf::Color mainTextColor = sf::Color::White,
+								 unsigned int addFontSize = 8, sf::Color addTextColor = sf::Color::White,
+								 sf::Color fillColor = sf::Color(105, 105, 105), sf::Color outlineColor = sf::Color::Black, float outlineThickness = 1)
+		: mainFontSize(mainFontSize),
+		  mainTextColor(mainTextColor),
+		  addFontSize(addFontSize),
+		  addTextColor(addTextColor),
 		  fillColor(fillColor),
 		  outlineColor(outlineColor),
 		  outlineThickness(outlineThickness)
@@ -18,7 +21,8 @@ namespace GUI
 
 	OnlineGameItem::OnlineGameItem(Offset margin, const FontHolder &fonts, const SoundHolder &sounds)
 		: ListItem(margin),
-		  mText("", fonts.get(Fonts::Main), 16),
+		  mTextName("", fonts.get(Fonts::Russian)),
+		  mTextId("", fonts.get(Fonts::Main)),
 		  data(),
 		  mShape(),
 		  normalStyle(),
@@ -72,9 +76,15 @@ namespace GUI
 		this->data = data;
 	}
 
-	void OnlineGameItem::setText(const std::string &text)
+	void OnlineGameItem::setName(const sf::String &text)
 	{
-		mText.setString(text);
+		mTextName.setString(text);
+		setTextOrigin();
+	}
+
+	void OnlineGameItem::setId(const std::string &text)
+	{
+		mTextId.setString(text);
 		setTextOrigin();
 	}
 
@@ -125,8 +135,11 @@ namespace GUI
 		mShape.setOutlineColor(style.outlineColor);
 		mShape.setOutlineThickness(style.outlineThickness);
 
-		mText.setCharacterSize(style.fontSize);
-		mText.setFillColor(style.textColor);
+		mTextName.setCharacterSize(style.mainFontSize);
+		mTextName.setFillColor(style.mainTextColor);
+
+		mTextId.setCharacterSize(style.addFontSize);
+		mTextId.setFillColor(style.addTextColor);
 
 		setTextOrigin();
 		setRectOrigin();
@@ -134,8 +147,11 @@ namespace GUI
 
 	void OnlineGameItem::setTextOrigin()
 	{
-		centerOrigin(mText);
-		mText.setOrigin(mText.getOrigin().x, mText.getOrigin().y - mShape.getGlobalBounds().height / 2.f - margin.top);
+		sf::FloatRect bounds = mTextName.getLocalBounds();
+		mTextName.setOrigin(std::floor(bounds.width / 2.f), std::floor((bounds.height + bounds.top) * 1.45f / 2.f) - mShape.getGlobalBounds().height / 3.f - margin.top);
+
+		sf::FloatRect IdBounds = mTextId.getLocalBounds();
+		mTextId.setOrigin(std::floor(IdBounds.width / 2.f), std::floor((IdBounds.height + IdBounds.top) * 1.45f / 2.f) - mShape.getGlobalBounds().height * 2.f / 3.f - margin.top);
 	}
 
 	void OnlineGameItem::setRectOrigin()
@@ -148,6 +164,7 @@ namespace GUI
 	{
 		states.transform.translate(mScrollTranslation);
 		target.draw(mShape, states);
-		target.draw(mText, states);
+		target.draw(mTextName, states);
+		target.draw(mTextId, states);
 	}
 }

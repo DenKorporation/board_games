@@ -39,6 +39,7 @@ set(SOURCE_FILE
 	sources/ListItem.cpp
 	sources/OnlineGameItem.cpp
 	sources/MultiplayerConnectionState.cpp
+	sources/ServerService.cpp
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})
