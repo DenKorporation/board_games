@@ -8,6 +8,7 @@
 #include "StatisticState.h"
 #include "GameEndState.h"
 #include "MultiplayerConnectionState.h"
+#include "CreatingRoomState.h"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 144.f);
 
@@ -25,7 +26,7 @@ Application::Application()
 	  mStatisticsNumFrames(0)
 {
 
-	mWindow.setKeyRepeatEnabled(false);
+	// mWindow.setKeyRepeatEnabled(false);
 	mFonts.load(Fonts::Main, getFilePath(Fonts::Main));
 	mFonts.load(Fonts::Label, getFilePath(Fonts::Label));
 	mFonts.load(Fonts::Russian, getFilePath(Fonts::Russian));
@@ -133,4 +134,5 @@ void Application::registerStates()
 	mStateStack.registerState<StatisticState>(States::Statistic);
 	mStateStack.registerState<GameEndState>(States::GameEnd);
 	mStateStack.registerState<MultiplayerConnectionState>(States::MultiplayerConnection);
+	mStateStack.registerState<CreatingRoomState>(States::CreatingRoom);
 }

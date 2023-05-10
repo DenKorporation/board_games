@@ -8,6 +8,7 @@ namespace States
 		Menu,
 		MultiplayerConnection,
 		MultiplayerGame,
+		CreatingRoom,
 		Game,
 		Pause,
 		Statistic,

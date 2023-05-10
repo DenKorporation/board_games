@@ -19,6 +19,8 @@ set(SOURCE_FILE
 	sources/GameState.cpp
 	sources/MenuState.cpp
 	sources/PauseState.cpp
+	sources/MultiplayerConnectionState.cpp
+	sources/CreatingRoomState.cpp
 	sources/StatisticState.cpp
 	sources/GameEndState.cpp
 	sources/SceneNode.cpp
@@ -34,11 +36,11 @@ set(SOURCE_FILE
 	sources/Container.cpp
 	sources/Button.cpp
 	sources/Label.cpp
+	sources/InputText.cpp
 	sources/Animation.cpp
 	sources/List.cpp
 	sources/ListItem.cpp
 	sources/OnlineGameItem.cpp
-	sources/MultiplayerConnectionState.cpp
 	sources/ServerService.cpp
 	icon.rc)
 

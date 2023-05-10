@@ -25,11 +25,25 @@ class ClientObject
     {
         try
         {
-            Console.WriteLine("Connection opened");
+            Console.WriteLine($"{Id}:Connection opened");
+
+            string? message = await Reader.ReadLineAsync();
+            using JsonDocument doc = JsonDocument.Parse(message);
+            JsonElement element = doc.RootElement;
             
-            //TODO send list of all game to client
-            
-            Console.WriteLine("message sent");
+            switch (element.GetProperty("Type").ToString())
+            {
+                case "Create":
+                    CreateRoomAction(element);
+                    break;
+                case "Connect":
+                    break;
+                case "List":
+                    ListRoomAction();
+                    break;
+                case "Game":
+                    break;
+            }
         }
         catch (Exception e)
         {
@@ -41,9 +55,43 @@ class ClientObject
         }
     }
 
+    private void CreateRoomAction(JsonElement element)
+    {
+        server.AllGame.Add(new Game(element.GetProperty("Name").ToString()));
+        Dictionary<string, string> reply = new()
+        {
+            { "Type", "Create" },
+            { "Status", "Done" }
+        };
+            
+        Writer.Write(JsonSerializer.Serialize(reply));
+        Writer.Flush();
+        
+        Console.WriteLine($"{Id}:the room has been created");
+    }
+
+    private void ConnectRoomAction(JsonElement element)
+    {
+    }
+
+    private void ListRoomAction()
+    {
+        string message = JsonSerializer.Serialize(server.AllGame);
+
+        Writer.Write(message);
+        Writer.Flush();
+
+        Console.WriteLine($"{Id}:message sent");
+    }
+
+    private void GameAction(JsonElement element)
+    {
+    }
+
+
     protected internal void Close()
     {
-        Console.WriteLine("connection closed");
+        Console.WriteLine($"{Id}:connection closed");
         Writer.Close();
         Reader.Close();
         client.Close();

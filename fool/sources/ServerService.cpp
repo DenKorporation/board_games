@@ -1,28 +1,49 @@
 #include "ServerService.h"
 
-#include <iostream>
+sf::IpAddress ServerService::Ip = sf::IpAddress("127.0.0.1");
+unsigned short ServerService::Port = 5050;
+
+ServerService::ServerService() : tcpSocket()
+{
+}
+
+bool ServerService::Connect()
+{
+	return tcpSocket.connect(Ip, Port) == sf::Socket::Done;
+}
+
+void ServerService::Send(json message)
+{
+	std::string stringMessage = message.dump();
+	char end = '\n';
+	tcpSocket.send(stringMessage.data(), stringMessage.length());
+	tcpSocket.send(&end, 1);
+}
 
 json ServerService::Receive()
 {
-	sf::TcpSocket socket;
-	sf::Socket::Status status = socket.connect("127.0.0.1", 5050);
 	std::string message = "";
+	char data[255];
+	std::size_t received = -1;
 
-	if (status == sf::Socket::Done)
+	while (received != 0)
 	{
-		char data[255];
-		std::size_t received = -1;
+		sf::Socket::Status status = tcpSocket.receive(data, 255, received);
 
-		while (received != 0)
+		if (status == sf::Socket::Done)
 		{
-			if (socket.receive(data, 255, received) == sf::Socket::Done)
-			{
-				message.append(data, received);
-			}
+			message.append(data, received);
 		}
-
-		socket.disconnect();
-		return json::parse(message);
+		else if (message.empty())
+		{
+			return nullptr;
+		}
 	}
-	return nullptr;
+
+	return json::parse(message);
+}
+
+void ServerService::Disconnect()
+{
+	tcpSocket.disconnect();
 }

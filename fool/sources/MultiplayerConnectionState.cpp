@@ -44,7 +44,8 @@ MultiplayerConnectionState::MultiplayerConnectionState(StateStack &stack, Contex
 														sf::Color::Black, 3.f));
 	createRoomButton->setSelectedStyle(GUI::Button::Style((unsigned int)buttonSize.y / 2u, sf::Color::Red, sf::Color(105, 105, 105),
 														  sf::Color::Black, 3.f));
-	createRoomButton->setCallback([this]() {});
+	createRoomButton->setCallback([this]()
+								  { requestStackPush(States::CreatingRoom); });
 
 	mGUIContainer->attachChild(std::move(createRoomButton));
 
@@ -123,7 +124,13 @@ void MultiplayerConnectionState::initConnectionList()
 {
 	mConnectionList->detachAllListItem();
 
-	json data = ServerService::Receive();
+	ServerService service;
+	service.Connect();
+	json query;
+	query["Type"] = "List";
+	service.Send(query);
+	json data = service.Receive();
+	service.Disconnect();
 
 	unsigned int winX = getContext().window->getSize().x, winY = getContext().window->getSize().y;
 	sf::Vector2f buttonSize(winX / 5.f, winY / 10.f);

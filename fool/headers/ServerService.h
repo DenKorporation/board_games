@@ -6,10 +6,16 @@ using json = nlohmann::json;
 class ServerService
 {
 public:
-	static void Connect();
-	static void Send();
-	static json Receive();
+	static sf::IpAddress Ip;
+	static unsigned short Port;
+
+public:
+	ServerService();
+	bool Connect();
+	void Send(json message);
+	json Receive();
+	void Disconnect();
 
 private:
-	static sf::TcpSocket tcpSocket;
+	sf::TcpSocket tcpSocket;
 };

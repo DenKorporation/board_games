@@ -17,7 +17,8 @@ namespace GUI
 			List,
 			ListItem,
 			Label,
-			Button
+			Button,
+			InputText
 		};
 		typedef std::unique_ptr<Component> Ptr;
 
