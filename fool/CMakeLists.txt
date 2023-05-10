@@ -10,38 +10,43 @@ include_directories(headers)
 
 set(SOURCE_FILE
 	fool.cpp
-	sources/AI.cpp
-	sources/Application.cpp
 	sources/Utility.cpp
-	sources/State.cpp
-	sources/StateStack.cpp
-	sources/GameStatus.cpp
-	sources/GameState.cpp
-	sources/MenuState.cpp
-	sources/PauseState.cpp
-	sources/MultiplayerConnectionState.cpp
-	sources/CreatingRoomState.cpp
-	sources/StatisticState.cpp
-	sources/GameEndState.cpp
-	sources/SceneNode.cpp
-	sources/SpriteNode.cpp
-	sources/ShapeNode.cpp
-	sources/Card.cpp
-	sources/CardGroup.cpp
-	sources/CardField.cpp
-	sources/CardDeck.cpp
-	sources/CardPile.cpp
-	sources/Offset.cpp
-	sources/Component.cpp
-	sources/Container.cpp
-	sources/Button.cpp
-	sources/Label.cpp
-	sources/InputText.cpp
-	sources/Animation.cpp
-	sources/List.cpp
-	sources/ListItem.cpp
-	sources/OnlineGameItem.cpp
 	sources/ServerService.cpp
+
+	sources/Engine/Application.cpp
+	sources/Engine/State.cpp
+	sources/Engine/StateStack.cpp
+	sources/Engine/SceneNode.cpp
+	sources/Engine/SpriteNode.cpp
+	sources/Engine/ShapeNode.cpp
+
+	sources/States/GameState.cpp
+	sources/States/MenuState.cpp
+	sources/States/PauseState.cpp
+	sources/States/MultiplayerConnectionState.cpp
+	sources/States/CreatingRoomState.cpp
+	sources/States/StatisticState.cpp
+	sources/States/GameEndState.cpp
+
+	sources/Game/AI.cpp
+	sources/Game/GameStatus.cpp
+	sources/Game/Animation.cpp
+	sources/Game/Card.cpp
+	sources/Game/CardGroup.cpp
+	sources/Game/CardField.cpp
+	sources/Game/CardDeck.cpp
+	sources/Game/CardPile.cpp
+
+	sources/GUI/Offset.cpp
+	sources/GUI/Component.cpp
+	sources/GUI/Container.cpp
+	sources/GUI/Button.cpp
+	sources/GUI/Label.cpp
+	sources/GUI/InputText.cpp
+	sources/GUI/List.cpp
+	sources/GUI/ListItem.cpp
+	sources/GUI/OnlineGameItem.cpp
+	
 	icon.rc)
 
 add_executable (fool ${SOURCE_FILE})

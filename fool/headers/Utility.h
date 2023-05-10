@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Card.h"
-#include "ResourceIdentifiers.h"
+#include "Game/Card.h"
+#include "Engine/Resource/ResourceIdentifiers.h"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
