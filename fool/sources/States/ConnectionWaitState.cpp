@@ -5,7 +5,7 @@
 #include "Engine/ShapeNode.h"
 #include "Engine/Resource/ResourceHolder.hpp"
 #include "Engine/Resource/ResourceIdentifiers.h"
-#include "Game/GameStatus.h"
+#include "Game/GameInfo.h"
 #include "Utility.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -32,18 +32,18 @@ ConnectionWaitState::ConnectionWaitState(StateStack &stack, Context context)
 	mGUIContainer = GUIMenu.get();
 	mSceneGraph.attachChild(std::move(GUIMenu));
 
-	std::string header = "Waiting for the player(" + std::to_string(getContext().gameStatus->getGameDescription().Count) + "/2)";
+	std::string header = "Waiting for the player(" + std::to_string(getContext().gameInfo->getGameDescription().Count) + "/2)";
 	GUI::Label::Ptr label(new GUI::Label(header, *context.fonts, Fonts::Main));
 	label->setFontSize((unsigned int)menuSize.y / 6);
 	label->setPosition(0.f, -menuSize.y / 3.f);
 	mGUIContainer->attachChild(std::move(label));
 
-	GUI::Label::Ptr nameRoomLabel(new GUI::Label(getContext().gameStatus->getGameDescription().Name, *context.fonts, Fonts::Russian));
+	GUI::Label::Ptr nameRoomLabel(new GUI::Label(getContext().gameInfo->getGameDescription().Name, *context.fonts, Fonts::Russian));
 	nameRoomLabel->setFontSize((unsigned int)menuSize.y / 7);
 	nameRoomLabel->setPosition(0.f, -(menuSize.y / 10.f));
 	mGUIContainer->attachChild(std::move(nameRoomLabel));
 
-	GUI::Label::Ptr IdRoomLabel(new GUI::Label(getContext().gameStatus->getGameDescription().Id, *context.fonts, Fonts::Russian));
+	GUI::Label::Ptr IdRoomLabel(new GUI::Label(getContext().gameInfo->getGameDescription().Id, *context.fonts, Fonts::Russian));
 	IdRoomLabel->setFontSize((unsigned int)menuSize.y / 12);
 	IdRoomLabel->setPosition(0.f, menuSize.y / 10.f);
 	mGUIContainer->attachChild(std::move(IdRoomLabel));

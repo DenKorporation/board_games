@@ -1,7 +1,7 @@
 #pragma once
 
 #include "States/StateIdentifiers.h"
-#include "Engine/REsource/ResourceIdentifiers.h"
+#include "Engine/Resource/ResourceIdentifiers.h"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
@@ -14,7 +14,7 @@ namespace sf
 }
 
 class StateStack;
-class GameStatus;
+class GameInfo;
 
 class State
 {
@@ -23,13 +23,13 @@ public:
 
 	struct Context
 	{
-		Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, SoundHolder &sounds, GameStatus &gameStatus);
+		Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, SoundHolder &sounds, GameInfo &gameInfo);
 
 		sf::RenderWindow *window;
 		TextureHolder *textures;
 		FontHolder *fonts;
 		SoundHolder *sounds;
-		GameStatus *gameStatus;
+		GameInfo *gameInfo;
 	};
 
 public:

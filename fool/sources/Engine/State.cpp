@@ -1,12 +1,12 @@
 #include "Engine/State.h"
 #include "Engine/StateStack.h"
 
-State::Context::Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, SoundHolder &sounds, GameStatus &gameStatus)
+State::Context::Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, SoundHolder &sounds, GameInfo &gameInfo)
 	: window(&window),
 	  textures(&textures),
 	  fonts(&fonts),
 	  sounds(&sounds),
-	  gameStatus(&gameStatus)
+	  gameInfo(&gameInfo)
 {
 }
 

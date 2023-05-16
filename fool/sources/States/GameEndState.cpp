@@ -6,7 +6,7 @@
 #include "Engine/Resource/ResourceHolder.hpp"
 #include "Engine/Resource/ResourceIdentifiers.h"
 #include "Utility.h"
-#include "Game/GameStatus.h"
+#include "Game/GameInfo.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -34,17 +34,17 @@ GameEndState::GameEndState(StateStack &stack, Context context)
 
 	GUI::Label::Ptr label(new GUI::Label("", *context.fonts, Fonts::Main));
 	Musics::ID curTheme;
-	switch (getContext().gameStatus->getCurrentStatus())
+	switch (getContext().gameInfo->getCurrentStatus())
 	{
-	case GameStatus::Draw:
+	case GameInfo::Draw:
 		label->setText("Draw");
 		curTheme = Musics::DrawTheme;
 		break;
-	case GameStatus::PlayerWon:
+	case GameInfo::PlayerWon:
 		label->setText("You win");
 		curTheme = Musics::VictoryTheme;
 		break;
-	case GameStatus::EnemyWon:
+	case GameInfo::EnemyWon:
 		label->setText("Game Over");
 		curTheme = Musics::LoseTheme;
 		break;

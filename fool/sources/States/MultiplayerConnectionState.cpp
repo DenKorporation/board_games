@@ -8,7 +8,7 @@
 #include "Engine/ShapeNode.h"
 #include "ServerService.h"
 #include "Utility.h"
-#include "Game/GameStatus.h"
+#include "Game/GameInfo.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -71,7 +71,7 @@ MultiplayerConnectionState::MultiplayerConnectionState(StateStack &stack, Contex
 								
 								if (data.has_value())
 								{
-									getContext().gameStatus->setGameDescription(std::any_cast<GameDescription>(data));
+									getContext().gameInfo->setGameDescription(std::any_cast<GameDescription>(data));
 									requestStackPush(States::ConnectionWait);
 								} });
 

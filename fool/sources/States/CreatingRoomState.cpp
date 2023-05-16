@@ -6,7 +6,7 @@
 #include "Engine/ShapeNode.h"
 #include "Engine/Resource/ResourceHolder.hpp"
 #include "Engine/Resource/ResourceIdentifiers.h"
-#include "Game/GameStatus.h"
+#include "Game/GameInfo.h"
 #include "Utility.h"
 #include "ServerService.h"
 
@@ -114,7 +114,7 @@ bool CreatingRoomState::createRoom(sf::String text)
 
 	if (reply["Type"] == "Create" && reply["Status"] == "Done")
 	{
-		GameDescription *game = &getContext().gameStatus->getGameDescription();
+		GameDescription *game = &getContext().gameInfo->getGameDescription();
 		game->Id = reply["Game"]["Id"];
 		game->Name = sf::String(utf8_to_wstring(reply["Game"]["Name"]));
 		game->Count = reply["Game"]["Count"];

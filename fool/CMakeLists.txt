@@ -30,7 +30,7 @@ set(SOURCE_FILE
 	sources/States/GameEndState.cpp
 
 	sources/Game/AI.cpp
-	sources/Game/GameStatus.cpp
+	sources/Game/GameInfo.cpp
 	sources/Game/Animation.cpp
 	sources/Game/Card.cpp
 	sources/Game/CardGroup.cpp

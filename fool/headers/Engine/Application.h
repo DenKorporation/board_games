@@ -3,7 +3,7 @@
 #include "Engine/Resource/ResourceHolder.hpp"
 #include "Engine/Resource/ResourceIdentifiers.h"
 #include "Engine/StateStack.h"
-#include "Game/GameStatus.h"
+#include "Game/GameInfo.h"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -31,7 +31,7 @@ private:
 	TextureHolder mTextures;
 	FontHolder mFonts;
 	SoundHolder mSounds;
-	GameStatus mGameStatus;
+	GameInfo mGameInfo;
 
 	StateStack mStateStack;
 

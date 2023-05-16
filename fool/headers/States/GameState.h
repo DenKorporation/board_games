@@ -13,7 +13,7 @@
 #include "Game/CardField.h"
 #include "Game/Animation.h"
 #include "Game/AI.h"
-#include "Game/GameStatus.h"
+#include "Game/GameInfo.h"
 #include "Game/PlayerIdentifiers.h"
 
 #include <SFML/Audio/Sound.hpp>

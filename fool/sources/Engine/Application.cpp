@@ -20,8 +20,8 @@ Application::Application()
 	  mTextures(),
 	  mFonts(),
 	  mSounds(),
-	  mGameStatus(),
-	  mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mGameStatus)),
+	  mGameInfo(),
+	  mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mGameInfo)),
 	  mStatisticsText(),
 	  mStatisticsUpdateTime(),
 	  mStatisticsNumFrames(0)

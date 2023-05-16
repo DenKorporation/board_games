@@ -1,7 +1,7 @@
 #include "States/GameState.h"
 #include "Utility.h"
 #include "Engine/SpriteNode.h"
-#include "Game/GameStatus.h"
+#include "Game/GameInfo.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -123,7 +123,7 @@ GameState::GameState(StateStack &stack, Context context)
 	mGUIContainer->attachChild(std::move(mainLabel));
 
 	mCurrentStatus = DealCards;
-	context.gameStatus->setCurrentStatus(GameStatus::InGame);
+	context.gameInfo->setCurrentStatus(GameInfo::InGame);
 
 	// Deal of cards
 	for (size_t i = 0; i < 6; i++)
@@ -146,15 +146,15 @@ GameState::~GameState()
 {
 	auto statistics = getStatistics();
 	statistics["total"]++;
-	switch (getContext().gameStatus->getCurrentStatus())
+	switch (getContext().gameInfo->getCurrentStatus())
 	{
-	case GameStatus::PlayerWon:
+	case GameInfo::PlayerWon:
 		statistics["victory"]++;
 		break;
-	case GameStatus::EnemyWon:
+	case GameInfo::EnemyWon:
 		statistics["lose"]++;
 		break;
-	case GameStatus::Draw:
+	case GameInfo::Draw:
 		statistics["draw"]++;
 		break;
 	}
@@ -484,17 +484,17 @@ bool GameState::update(sf::Time dt)
 			{
 				if (mPlayerCards->getNumberOfCards() == 0 && mEnemyCards->getNumberOfCards() != 0)
 				{
-					getContext().gameStatus->setCurrentStatus(GameStatus::PlayerWon);
+					getContext().gameInfo->setCurrentStatus(GameInfo::PlayerWon);
 					requestStackPush(States::GameEnd);
 				}
 				else if (mPlayerCards->getNumberOfCards() != 0 && mEnemyCards->getNumberOfCards() == 0)
 				{
-					getContext().gameStatus->setCurrentStatus(GameStatus::EnemyWon);
+					getContext().gameInfo->setCurrentStatus(GameInfo::EnemyWon);
 					requestStackPush(States::GameEnd);
 				}
 				else
 				{
-					getContext().gameStatus->setCurrentStatus(GameStatus::Draw);
+					getContext().gameInfo->setCurrentStatus(GameInfo::Draw);
 					requestStackPush(States::GameEnd);
 				}
 			}

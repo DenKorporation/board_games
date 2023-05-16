@@ -4,7 +4,7 @@
 
 #include "GameDescription.h"
 
-class GameStatus : sf::NonCopyable
+class GameInfo : sf::NonCopyable
 {
 public:
 	enum Status
@@ -17,7 +17,7 @@ public:
 	};
 
 public:
-	GameStatus();
+	GameInfo();
 
 	Status getCurrentStatus();
 	void setCurrentStatus(Status status);
