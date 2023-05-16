@@ -23,7 +23,7 @@ namespace GUI
 		: ListItem(margin),
 		  mTextName("", fonts.get(Fonts::Russian)),
 		  mTextId("", fonts.get(Fonts::Main)),
-		  data(),
+		  mGameDescription(),
 		  mShape(),
 		  normalStyle(),
 		  hoverStyle(),
@@ -35,7 +35,7 @@ namespace GUI
 
 	std::any OnlineGameItem::getData() const
 	{
-		return data;
+		return mGameDescription;
 	}
 
 	sf::FloatRect OnlineGameItem::getMinBounds() const
@@ -71,9 +71,11 @@ namespace GUI
 		mSelectSound.play();
 	}
 
-	void OnlineGameItem::setData(std::string data)
+	void OnlineGameItem::setData(GameDescription game)
 	{
-		this->data = data;
+		mGameDescription = game;
+		setName(mGameDescription.Name);
+		setId(mGameDescription.Id);
 	}
 
 	void OnlineGameItem::setName(const sf::String &text)

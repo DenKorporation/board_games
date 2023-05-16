@@ -9,6 +9,7 @@
 #include "States/GameEndState.h"
 #include "States/MultiplayerConnectionState.h"
 #include "States/CreatingRoomState.h"
+#include "States/ConnectionWaitState.h"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 144.f);
 
@@ -135,4 +136,5 @@ void Application::registerStates()
 	mStateStack.registerState<GameEndState>(States::GameEnd);
 	mStateStack.registerState<MultiplayerConnectionState>(States::MultiplayerConnection);
 	mStateStack.registerState<CreatingRoomState>(States::CreatingRoom);
+	mStateStack.registerState<ConnectionWaitState>(States::ConnectionWait);
 }

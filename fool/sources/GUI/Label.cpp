@@ -6,7 +6,7 @@
 
 namespace GUI
 {
-	Label::Label(const std::string &text, FontHolder &fonts, Fonts::ID fontID)
+	Label::Label(const sf::String &text, FontHolder &fonts, Fonts::ID fontID)
 		: mText(text, fonts.get(fontID), 16)
 	{
 		centerOrigin(mText);
@@ -27,6 +27,12 @@ namespace GUI
 	}
 
 	void Label::setText(const std::string &text)
+	{
+		mText.setString(text);
+		centerOrigin(mText);
+	}
+
+	void Label::setUtf8Text(const sf::String &text)
 	{
 		mText.setString(text);
 		centerOrigin(mText);

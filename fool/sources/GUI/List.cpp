@@ -130,12 +130,13 @@ namespace GUI
 
 	std::any List::getSelectedData()
 	{
-		if (!hasSelection())
+		std::any result = std::any();
+		result.reset();
+		if (hasSelection())
 		{
-			return nullptr;
+			result = mChildren[mSelectedChild]->getData();
 		}
-
-		return mChildren[mSelectedChild]->getData();
+		return result;
 	}
 
 	Component::Type List::getType() const
@@ -153,8 +154,7 @@ namespace GUI
 		return mSelectedChild >= 0;
 	}
 
-	void
-	List::draw(sf::RenderTarget &target, sf::RenderStates states) const
+	void List::draw(sf::RenderTarget &target, sf::RenderStates states) const
 	{
 		states.transform *= getTransform();
 		drawCurrent(target, states);

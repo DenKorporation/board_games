@@ -2,6 +2,8 @@
 
 #include <SFML/System/NonCopyable.hpp>
 
+#include "GameDescription.h"
+
 class GameStatus : sf::NonCopyable
 {
 public:
@@ -20,6 +22,10 @@ public:
 	Status getCurrentStatus();
 	void setCurrentStatus(Status status);
 
+	void setGameDescription(const GameDescription &gameDescription);
+	GameDescription &getGameDescription();
+
 private:
 	Status currentStatus;
+	GameDescription curGame;
 };

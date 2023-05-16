@@ -7,11 +7,11 @@ namespace ServerLib;
 public class ServerObject
 {
     public TcpListener tcpListener;
-    List<ClientObject> clients = new(); // все подключения
+    private List<ClientObject> clients = new(); // все подключения
+    internal List<Game> AllPendingGames { get; } = new();
+    internal List<Game> AllActiveGames { get; } = new();
 
-    public List<Game> AllGame { get; } = new();
-
-    protected internal void RemoveConnection(string id)
+    internal void RemoveConnection(string id)
     {
         ClientObject? client = clients.FirstOrDefault(c => c.Id == id);
         if (client != null) clients.Remove(client);
@@ -40,19 +40,7 @@ public class ServerObject
         }
     }
 
-    protected internal async Task BroadcastMessageAsync(string message, string id)
-    {
-        foreach (var client in clients)
-        {
-            if (client.Id != id)
-            {
-                await client.Writer.WriteLineAsync(message);
-                await client.Writer.FlushAsync();
-            }
-        }
-    }
-
-    protected internal void Disconnect()
+    internal void Disconnect()
     {
         foreach (var client in clients)
         {

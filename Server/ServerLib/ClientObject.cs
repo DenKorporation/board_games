@@ -5,14 +5,14 @@ namespace ServerLib;
 
 class ClientObject
 {
-    protected internal string Id { get; } = Guid.NewGuid().ToString();
-    protected internal StreamWriter Writer { get; }
-    protected internal StreamReader Reader { get; }
+    internal string Id { get; } = Guid.NewGuid().ToString();
+    internal StreamWriter Writer { get; }
+    internal StreamReader Reader { get; }
 
     TcpClient client;
     ServerObject server;
 
-    public ClientObject(TcpClient tcpClient, ServerObject serverObject)
+    internal ClientObject(TcpClient tcpClient, ServerObject serverObject)
     {
         client = tcpClient;
         server = serverObject;
@@ -21,7 +21,7 @@ class ClientObject
         Writer = new StreamWriter(stream);
     }
 
-    public async Task ProcessAsync()
+    internal async Task ProcessAsync()
     {
         try
         {
@@ -57,11 +57,13 @@ class ClientObject
 
     private void CreateRoomAction(JsonElement element)
     {
-        server.AllGame.Add(new Game(element.GetProperty("Name").ToString()));
-        Dictionary<string, string> reply = new()
+        Game game = new Game(element.GetProperty("Name").ToString());
+        server.AllPendingGames.Add(game);
+        Dictionary<string, object> reply = new()
         {
             { "Type", "Create" },
-            { "Status", "Done" }
+            { "Status", "Done" },
+            { "Game", game}
         };
             
         Writer.Write(JsonSerializer.Serialize(reply));
@@ -76,7 +78,7 @@ class ClientObject
 
     private void ListRoomAction()
     {
-        string message = JsonSerializer.Serialize(server.AllGame);
+        string message = JsonSerializer.Serialize(server.AllPendingGames);
 
         Writer.Write(message);
         Writer.Flush();
@@ -89,7 +91,7 @@ class ClientObject
     }
 
 
-    protected internal void Close()
+    internal void Close()
     {
         Console.WriteLine($"{Id}:connection closed");
         Writer.Close();

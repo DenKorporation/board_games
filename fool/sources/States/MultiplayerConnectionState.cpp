@@ -8,12 +8,16 @@
 #include "Engine/ShapeNode.h"
 #include "ServerService.h"
 #include "Utility.h"
+#include "Game/GameStatus.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
 
 MultiplayerConnectionState::MultiplayerConnectionState(StateStack &stack, Context context)
-	: State(stack, context)
+	: State(stack, context),
+	  timeSinceLastUpdate(sf::seconds(0.f)),
+	  mInitListThread(&MultiplayerConnectionState::initConnectionList, this),
+	  mIsThreadRunning(false)
 {
 	unsigned int winX = context.window->getSize().x, winY = context.window->getSize().y;
 	sf::Vector2f buttonSize(winX / 5.f, winY / 10.f);
@@ -57,7 +61,19 @@ MultiplayerConnectionState::MultiplayerConnectionState(StateStack &stack, Contex
 													 sf::Color::Black, 3.f));
 	connectButton->setSelectedStyle(GUI::Button::Style((unsigned int)buttonSize.y / 2u, sf::Color::Red, sf::Color(105, 105, 105),
 													   sf::Color::Black, 3.f));
-	connectButton->setCallback([this]() {});
+	connectButton->setCallback([this]()
+							   {
+								std::any data;
+								{
+									sf::Lock lock(mMutex);
+									data = mConnectionList->getSelectedData();
+								}
+								
+								if (data.has_value())
+								{
+									getContext().gameStatus->setGameDescription(std::any_cast<GameDescription>(data));
+									requestStackPush(States::ConnectionWait);
+								} });
 
 	mGUIContainer->attachChild(std::move(connectButton));
 
@@ -70,7 +86,13 @@ MultiplayerConnectionState::MultiplayerConnectionState(StateStack &stack, Contex
 	refreshButton->setSelectedStyle(GUI::Button::Style((unsigned int)buttonSize.y / 2u, sf::Color::Red, sf::Color(105, 105, 105),
 													   sf::Color::Black, 3.f));
 	refreshButton->setCallback([this]()
-							   { initConnectionList(); });
+							   {
+								   sf::Lock lock(mMutex);
+								   if (!mIsThreadRunning)
+								   {
+									   mIsThreadRunning = true;
+									   mInitListThread.launch();
+								   } });
 
 	mGUIContainer->attachChild(std::move(refreshButton));
 
@@ -98,32 +120,39 @@ MultiplayerConnectionState::MultiplayerConnectionState(StateStack &stack, Contex
 	mConnectionList->setOutlineThickness(3.f);
 	mConnectionList->setOutlineColor(sf::Color::Black);
 
-	initConnectionList();
+	mIsThreadRunning = true;
+	mInitListThread.launch();
 }
 
 void MultiplayerConnectionState::draw()
 {
+	sf::Lock lock(mMutex);
 	sf::RenderWindow &window = *getContext().window;
 	window.setView(window.getDefaultView());
-
 	window.draw(mSceneGraph);
 }
 
 bool MultiplayerConnectionState::update(sf::Time dt)
 {
+	sf::Lock lock(mMutex);
+	timeSinceLastUpdate += dt;
+	if (timeSinceLastUpdate > sf::seconds(5.f) && !mIsThreadRunning)
+	{
+		mIsThreadRunning = true;
+		mInitListThread.launch();
+	}
 	return true;
 }
 
 bool MultiplayerConnectionState::handleEvent(const sf::Event &event)
 {
+	sf::Lock lock(mMutex);
 	mGUIContainer->handleEvent(event);
 	return true;
 }
 
 void MultiplayerConnectionState::initConnectionList()
 {
-	mConnectionList->detachAllListItem();
-
 	ServerService service;
 	service.Connect();
 	json query;
@@ -131,6 +160,8 @@ void MultiplayerConnectionState::initConnectionList()
 	service.Send(query);
 	json data = service.Receive();
 	service.Disconnect();
+
+	sf::Lock lock(mMutex);
 
 	unsigned int winX = getContext().window->getSize().x, winY = getContext().window->getSize().y;
 	sf::Vector2f buttonSize(winX / 5.f, winY / 10.f);
@@ -142,17 +173,30 @@ void MultiplayerConnectionState::initConnectionList()
 	GUI::OnlineGameItem::Style hoverStyle(GUI::OnlineGameItem::Style((unsigned int)buttonSize.y / 3u, sf::Color::Red, (unsigned int)buttonSize.y / 6u, sf::Color::Red, sf::Color(105, 105, 105),
 																	 sf::Color::Black, 3.f));
 
+	mConnectionList->detachAllListItem();
+
 	for (auto element : data)
 	{
 		GUI::OnlineGameItem::Ptr listItem(new GUI::OnlineGameItem(GUI::Offset(20, 20), *getContext().fonts, *getContext().sounds));
 
-		listItem->setData(element["Id"]);
-		listItem->setName(sf::String(utf8_to_wstring(element["Name"])));
-		listItem->setId(element["Id"]);
+		GameDescription game = GameDescription();
+		game.Name = sf::String(utf8_to_wstring(element["Name"]));
+		game.Id = element["Id"];
+		game.Count = element["Count"];
+
+		listItem->setData(game);
 		listItem->setSize(buttonSize * 1.5f);
 		listItem->setNormalStyle(normalStyle);
 		listItem->setHoverStyle(hoverStyle);
 		listItem->setSelectedStyle(selectedStyle);
 		mConnectionList->pack(std::move(listItem));
 	}
+
+	timeSinceLastUpdate = sf::seconds(0.f);
+	mIsThreadRunning = false;
+}
+
+MultiplayerConnectionState::~MultiplayerConnectionState()
+{
+	mInitListThread.terminate();
 }

@@ -6,6 +6,7 @@
 #include "Engine/ShapeNode.h"
 #include "Engine/Resource/ResourceHolder.hpp"
 #include "Engine/Resource/ResourceIdentifiers.h"
+#include "Game/GameStatus.h"
 #include "Utility.h"
 #include "ServerService.h"
 
@@ -53,7 +54,7 @@ CreatingRoomState::CreatingRoomState(StateStack &stack, Context context)
 						   { 
 							if(createRoom(mInputText->getString())){
 								requestStackPop();
-								// requestStackPush(States::)
+								requestStackPush(States::ConnectionWait);
 							}
 							else{
 								requestStackPop();
@@ -81,7 +82,7 @@ void CreatingRoomState::draw()
 
 bool CreatingRoomState::update(sf::Time dt)
 {
-	return false;
+	return true;
 }
 
 bool CreatingRoomState::handleEvent(const sf::Event &event)
@@ -101,14 +102,25 @@ bool CreatingRoomState::handleEvent(const sf::Event &event)
 
 bool CreatingRoomState::createRoom(sf::String text)
 {
-	ServerService service;
-	service.Connect();
 	json query;
 	query["Type"] = "Create";
 	query["Name"] = wstring_to_utf8(text.toWideString());
+
+	ServerService service;
+	service.Connect();
 	service.Send(query);
 	json reply = service.Receive();
 	service.Disconnect();
 
-	return reply["Type"] == "Create" && reply["Status"] == "Done";
+	if (reply["Type"] == "Create" && reply["Status"] == "Done")
+	{
+		GameDescription *game = &getContext().gameStatus->getGameDescription();
+		game->Id = reply["Game"]["Id"];
+		game->Name = sf::String(utf8_to_wstring(reply["Game"]["Name"]));
+		game->Count = reply["Game"]["Count"];
+
+		return true;
+	}
+
+	return false;
 }

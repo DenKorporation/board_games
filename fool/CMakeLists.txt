@@ -24,6 +24,7 @@ set(SOURCE_FILE
 	sources/States/MenuState.cpp
 	sources/States/PauseState.cpp
 	sources/States/MultiplayerConnectionState.cpp
+	sources/States/ConnectionWaitState.cpp
 	sources/States/CreatingRoomState.cpp
 	sources/States/StatisticState.cpp
 	sources/States/GameEndState.cpp

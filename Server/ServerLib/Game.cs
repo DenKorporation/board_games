@@ -1,14 +1,16 @@
 ﻿namespace ServerLib;
 
-public class Game
+class Game
 {
     public string Name { get; }
     public string Id { get; }
 
-    internal ClientObject Host { get; set; }
-    internal ClientObject Client { get; set; }
+    public int Count { get; set; }
     
-    public Game(string name)
+    internal ClientObject Host { get; set; }
+    internal ClientObject Join { get; set; }
+    
+    internal Game(string name)
     {
         Name = name;
         Id = Guid.NewGuid().ToString();

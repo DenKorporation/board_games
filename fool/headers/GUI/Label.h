@@ -14,13 +14,14 @@ namespace GUI
 		typedef std::unique_ptr<Label> Ptr;
 
 	public:
-		Label(const std::string &text, FontHolder &fonts, Fonts::ID fontID);
+		Label(const sf::String &text, FontHolder &fonts, Fonts::ID fontID);
 
 		virtual bool isSelectable() const;
 		virtual void handleEvent(const sf::Event &event);
 		virtual Component::Type getType() const;
 
 		void setText(const std::string &text);
+		void setUtf8Text(const sf::String &text);
 		void setFontSize(unsigned int size);
 		void setOutlineThickness(float thickness);
 		void setLetterSpacing(float letterSpacing);

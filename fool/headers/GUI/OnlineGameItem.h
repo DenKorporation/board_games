@@ -3,6 +3,7 @@
 #include "GUI/ListItem.h"
 #include "Engine/Resource/ResourceHolder.hpp"
 #include "Engine/Resource/ResourceIdentifiers.h"
+#include "Game/GameDescription.h"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -38,9 +39,7 @@ namespace GUI
 
 		virtual void select();
 
-		void setData(std::string data);
-		void setName(const sf::String &text);
-		void setId(const std::string &text);
+		void setData(GameDescription game);
 		void setSize(sf::Vector2f size);
 
 		void applyNormalStyle();
@@ -52,6 +51,9 @@ namespace GUI
 		void setHoverStyle(Style style);
 
 	private:
+		void setName(const sf::String &text);
+		void setId(const std::string &text);
+
 		void applyStyle(Style style);
 
 		void setTextOrigin();
@@ -64,7 +66,7 @@ namespace GUI
 		Style normalStyle;
 		Style selectedStyle;
 
-		std::string data;
+		GameDescription mGameDescription;
 
 		sf::Sound mSelectSound;
 
