@@ -39,7 +39,11 @@ CreatingRoomState::CreatingRoomState(StateStack &stack, Context context)
 
 	GUI::InputText::Ptr inputText(new GUI::InputText(*context.fonts, Fonts::Russian));
 	mInputText = inputText.get();
-	inputText->setFontSize((unsigned int)menuSize.y / 5);
+	GUI::InputText::Style activeStyle = GUI::InputText::Style((unsigned int)menuSize.y / 5, sf::Color::White,
+															  sf::Color::Transparent, sf::Color::Transparent, 1.f);
+	inputText->setActiveStyle(activeStyle);
+	inputText->setAlignment(GUI::InputText::Center);
+	inputText->setIsAlwaysActive(true);
 	mGUIContainer->attachChild(std::move(inputText));
 
 	GUI::Button::Ptr yesButton(new GUI::Button(*context.fonts, *context.sounds));

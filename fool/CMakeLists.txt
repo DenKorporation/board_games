@@ -27,6 +27,7 @@ set(SOURCE_FILE
 	sources/States/ConnectionWaitState.cpp
 	sources/States/CreatingRoomState.cpp
 	sources/States/StatisticState.cpp
+	sources/States/SettingsState.cpp
 	sources/States/GameEndState.cpp
 
 	sources/Game/AI.cpp

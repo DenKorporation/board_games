@@ -43,6 +43,9 @@ class ClientObject
                     break;
                 case "Game":
                     break;
+                case "Test":
+                    TestAction();
+                    break;
             }
         }
         catch (Exception e)
@@ -88,6 +91,20 @@ class ClientObject
 
     private void GameAction(JsonElement element)
     {
+    }
+
+    private void TestAction()
+    {
+        Dictionary<string, string> reply = new()
+        {
+            { "Test", "Ok" }
+        };
+        string message = JsonSerializer.Serialize(reply);
+        
+        Writer.Write(message);
+        Writer.Flush();
+
+        Console.WriteLine($"{Id}:message sent");
     }
 
 

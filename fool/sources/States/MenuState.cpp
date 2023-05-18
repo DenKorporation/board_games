@@ -67,13 +67,13 @@ MenuState::MenuState(StateStack &stack, Context context)
 	GUI::Button::Ptr statisticButton(new GUI::Button(*context.fonts, *context.sounds));
 	statisticButton->setPosition(0.f, 2 * (winY / 10.f) * 1.2f);
 	statisticButton->setSize(sf::Vector2f(winX / 5.f, winY / 10.f));
-	statisticButton->setText("Statistic");
+	statisticButton->setText("Settings");
 	statisticButton->setNormalStyle(normalStyle);
 	statisticButton->setSelectedStyle(selectedStyle);
 	statisticButton->setCallback([this]()
 								 {
 								requestStackPop();
-								requestStackPush(States::Statistic); });
+								requestStackPush(States::Settings); });
 	GUIMenu->attachChild(std::move(statisticButton));
 
 	GUI::Button::Ptr exitButton(new GUI::Button(*context.fonts, *context.sounds));

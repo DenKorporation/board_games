@@ -153,10 +153,10 @@ bool MultiplayerConnectionState::handleEvent(const sf::Event &event)
 
 void MultiplayerConnectionState::initConnectionList()
 {
-	ServerService service;
-	service.Connect();
 	json query;
 	query["Type"] = "List";
+	ServerService service;
+	service.Connect();
 	service.Send(query);
 	json data = service.Receive();
 	service.Disconnect();

@@ -29,6 +29,10 @@ namespace GUI
 				{
 					element->handleEvent(event);
 				}
+				else if (element->getType() == Component::InputText && !element->isSelected() && element->isActive())
+				{
+					element->deactivate();
+				}
 			}
 
 			if (hasSelection())

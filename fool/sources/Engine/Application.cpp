@@ -5,7 +5,7 @@
 #include "States/MenuState.h"
 #include "States/GameState.h"
 #include "States/PauseState.h"
-#include "States/StatisticState.h"
+#include "States/SettingsState.h"
 #include "States/GameEndState.h"
 #include "States/MultiplayerConnectionState.h"
 #include "States/CreatingRoomState.h"
@@ -139,7 +139,7 @@ void Application::registerStates()
 	mStateStack.registerState<MenuState>(States::Menu);
 	mStateStack.registerState<GameState>(States::Game);
 	mStateStack.registerState<PauseState>(States::Pause);
-	mStateStack.registerState<StatisticState>(States::Statistic);
+	mStateStack.registerState<SettingsState>(States::Settings);
 	mStateStack.registerState<GameEndState>(States::GameEnd);
 	mStateStack.registerState<MultiplayerConnectionState>(States::MultiplayerConnection);
 	mStateStack.registerState<CreatingRoomState>(States::CreatingRoom);
