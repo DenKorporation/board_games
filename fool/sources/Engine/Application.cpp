@@ -21,11 +21,13 @@ Application::Application()
 	  mFonts(),
 	  mSounds(),
 	  mGameInfo(),
-	  mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mGameInfo)),
+	  mPlayerInfo(),
+	  mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mGameInfo, mPlayerInfo)),
 	  mStatisticsText(),
 	  mStatisticsUpdateTime(),
 	  mStatisticsNumFrames(0)
 {
+	mPlayerInfo.setData(loadPlayerInfo());
 
 	// mWindow.setKeyRepeatEnabled(false);
 	mFonts.load(Fonts::Main, getFilePath(Fonts::Main));
@@ -55,6 +57,11 @@ Application::Application()
 	registerStates();
 
 	mStateStack.pushState(States::Menu);
+}
+
+Application::~Application()
+{
+	savePlayerInfo(mPlayerInfo);
 }
 
 void Application::run()

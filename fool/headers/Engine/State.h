@@ -15,6 +15,7 @@ namespace sf
 
 class StateStack;
 class GameInfo;
+class PlayerInfo;
 
 class State
 {
@@ -23,13 +24,14 @@ public:
 
 	struct Context
 	{
-		Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, SoundHolder &sounds, GameInfo &gameInfo);
+		Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, SoundHolder &sounds, GameInfo &gameInfo, PlayerInfo &playerInfo);
 
 		sf::RenderWindow *window;
 		TextureHolder *textures;
 		FontHolder *fonts;
 		SoundHolder *sounds;
 		GameInfo *gameInfo;
+		PlayerInfo *playerInfo;
 	};
 
 public:

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Card.h"
+#include "Game/PlayerInfo.h"
 #include "Engine/Resource/ResourceIdentifiers.h"
 
 #include <SFML/Graphics/Sprite.hpp>
@@ -11,6 +12,7 @@
 #include <string>
 
 const std::string STATISTICPATH = "statistic.txt";
+const std::string PLAYERINFO = "playerInfo.txt";
 
 std::wstring utf8_to_wstring(const std::string &str);
 std::string wstring_to_utf8(const std::wstring &str);
@@ -24,6 +26,9 @@ std::string getFilePath(Fonts::ID fontID);
 
 std::string getFilePath(Sounds::ID soundID);
 std::string getFilePath(Musics::ID musicID);
+
+void savePlayerInfo(PlayerInfo playerInfo);
+PlayerInfo loadPlayerInfo();
 
 void centerOrigin(sf::Sprite &sprite);
 void centerOrigin(sf::Text &text);

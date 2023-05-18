@@ -31,6 +31,7 @@ set(SOURCE_FILE
 
 	sources/Game/AI.cpp
 	sources/Game/GameInfo.cpp
+	sources/Game/PlayerInfo.cpp
 	sources/Game/Animation.cpp
 	sources/Game/Card.cpp
 	sources/Game/CardGroup.cpp

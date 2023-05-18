@@ -4,6 +4,7 @@
 #include "Engine/Resource/ResourceIdentifiers.h"
 #include "Engine/StateStack.h"
 #include "Game/GameInfo.h"
+#include "Game/PlayerInfo.h"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -14,6 +15,7 @@ class Application : private sf::NonCopyable
 {
 public:
 	Application();
+	~Application();
 	void run();
 
 private:
@@ -32,6 +34,7 @@ private:
 	FontHolder mFonts;
 	SoundHolder mSounds;
 	GameInfo mGameInfo;
+	PlayerInfo mPlayerInfo;
 
 	StateStack mStateStack;
 

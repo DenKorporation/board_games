@@ -201,6 +201,32 @@ std::string getFilePath(Musics::ID musicID)
 	return "";
 }
 
+void savePlayerInfo(PlayerInfo playerInfo)
+{
+	std::ofstream fout(PLAYERINFO);
+
+	if (fout.is_open())
+	{
+		fout << wstring_to_utf8(playerInfo.getName());
+	}
+	fout.close();
+}
+
+PlayerInfo loadPlayerInfo()
+{
+	PlayerInfo playerInfo = PlayerInfo();
+
+	std::ifstream fin(PLAYERINFO);
+	if (fin.is_open())
+	{
+		std::string name;
+		fin >> name;
+		playerInfo.setName(sf::String(utf8_to_wstring(name)));
+	}
+	fin.close();
+	return playerInfo;
+}
+
 void centerOrigin(sf::Sprite &sprite)
 {
 	sf::FloatRect bounds = sprite.getLocalBounds();
