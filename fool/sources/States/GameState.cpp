@@ -126,17 +126,18 @@ GameState::GameState(StateStack &stack, Context context)
 	context.gameInfo->setCurrentStatus(GameInfo::InGame);
 
 	// Deal of cards
+	sf::Time dealTimeDelay = mDealCardsSound.getBuffer()->getDuration();
 	for (size_t i = 0; i < 6; i++)
 	{
 		Card::Ptr playerCard = mCardDeck->popCard();
 		mAnimations.push_back(new Animation(playerCard.get(), &mSceneGraph, static_cast<SceneNode *>(mPlayerCards),
 											playerCard->getPosition(), mPlayerCards->getPosition(), sf::seconds(0.5f), *context.sounds));
-		mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(i * 0.2f));
+		mAnimations[mAnimations.size() - 1]->setDelayTime(dealTimeDelay + sf::seconds(i * 0.2f));
 		mSceneGraph.attachChild(std::move(playerCard));
 		Card::Ptr enemyCard = mCardDeck->popCard();
 		mAnimations.push_back(new Animation(enemyCard.get(), &mSceneGraph, static_cast<SceneNode *>(mEnemyCards),
 											enemyCard->getPosition(), mEnemyCards->getPosition(), sf::seconds(0.5f), *context.sounds));
-		mAnimations[mAnimations.size() - 1]->setDelayTime(sf::seconds(0.1f + i * 0.2f));
+		mAnimations[mAnimations.size() - 1]->setDelayTime(dealTimeDelay + sf::seconds(0.1f + i * 0.2f));
 		mSceneGraph.attachChild(std::move(enemyCard));
 	}
 	mDealCardsSound.play();
