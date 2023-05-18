@@ -293,8 +293,8 @@ bool GameState::update(sf::Time dt)
 				else
 				{
 					mCurrentStatus = EnemyTurn;
-					mRightButton->clearTextAndCallback();
 				}
+				mRightButton->clearTextAndCallback();
 				elapsedTime = sf::Time::Zero;
 				break;
 			case AI::DiscardCards:
