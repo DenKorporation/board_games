@@ -3,6 +3,7 @@
 #include <SFML/System/NonCopyable.hpp>
 
 #include "GameDescription.h"
+#include "ServerService.h"
 
 class GameInfo : sf::NonCopyable
 {
@@ -25,7 +26,11 @@ public:
 	void setGameDescription(const GameDescription &gameDescription);
 	GameDescription &getGameDescription();
 
+	void setServerService(std::unique_ptr<ServerService> service);
+	ServerService &getServerService();
+
 private:
 	Status currentStatus;
 	GameDescription curGame;
+	std::unique_ptr<ServerService> curService;
 };

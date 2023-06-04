@@ -24,3 +24,13 @@ GameDescription &GameInfo::getGameDescription()
 {
 	return curGame;
 }
+
+void GameInfo::setServerService(std::unique_ptr<ServerService> service)
+{
+	curService = std::move(service);
+}
+
+ServerService &GameInfo::getServerService()
+{
+	return *curService;
+}
