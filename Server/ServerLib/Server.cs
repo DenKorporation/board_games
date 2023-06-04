@@ -4,7 +4,7 @@ namespace ServerLib;
 
 public class ServerObject
 {
-    public TcpListener tcpListener;
+    public TcpListener TcpListener;
     private List<ClientObject> clients = new(); // все подключения
     internal List<Game> AllPendingGames { get; } = new();
     internal List<Game> AllActiveGames { get; } = new();
@@ -22,7 +22,7 @@ public class ServerObject
         {
             while (true)
             {
-                TcpClient tcpClient = await tcpListener.AcceptTcpClientAsync();
+                TcpClient tcpClient = await TcpListener.AcceptTcpClientAsync();
                 ClientObject clientObject = new ClientObject(tcpClient, this);
                 clients.Add(clientObject);
                 Task.Run(clientObject.ProcessAsync);
@@ -45,6 +45,6 @@ public class ServerObject
             client.Close();
         }
 
-        tcpListener.Stop();
+        TcpListener.Stop();
     }
 }

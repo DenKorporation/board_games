@@ -42,8 +42,8 @@ while (!isConnected)
     Console.WriteLine($"server: {serverIp}. Trying start listening...");
     try
     {
-        server.tcpListener = new TcpListener(serverIp);
-        server.tcpListener.Start();
+        server.TcpListener = new TcpListener(serverIp);
+        server.TcpListener.Start();
         Console.WriteLine("Listening started");
         isConnected = true;
     }
