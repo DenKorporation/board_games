@@ -226,8 +226,8 @@ void SettingsState::checkConnection()
 		service.Send(query);
 		try
 		{
-			json data = service.Receive();
-			if (data["Test"] == "Ok")
+			json reply = service.Receive();
+			if (reply["Type"] == "Test" && reply["Status"] == "Ok")
 			{
 				sf::Lock lock(mMutex);
 				mReplyLabel->setText("Done");
@@ -246,6 +246,7 @@ void SettingsState::checkConnection()
 			mReplyLabel->setText("Fail");
 			mReplyLabel->setFillColor(sf::Color::Red);
 		}
+		service.Disconnect();
 	}
 	else
 	{

@@ -128,7 +128,7 @@ void Application::updateStatisticText(sf::Time dt)
 	if (mStatisticsUpdateTime >= sf::seconds(1.f))
 	{
 		mStatisticsText.setString("FPS: " + std::to_string(mStatisticsNumFrames) + "\n" +
-								  "Update: " + std::to_string(mStatisticsUpdateTime.asMicroseconds() / mStatisticsNumFrames) + "ms");
+								  "Update: " + std::to_string(mStatisticsUpdateTime.asMilliseconds() / mStatisticsNumFrames) + "ms");
 		mStatisticsNumFrames = 0;
 		mStatisticsUpdateTime -= sf::seconds(1.f);
 	}
