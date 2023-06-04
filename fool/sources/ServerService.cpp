@@ -4,7 +4,7 @@ std::string ServerService::StringIp = "127.0.0.1";
 sf::IpAddress ServerService::Ip = sf::IpAddress("127.0.0.1");
 unsigned short ServerService::Port = 5050;
 
-ServerService::ServerService() : tcpSocket()
+ServerService::ServerService() : tcpSocket(), restData()
 {
 }
 
@@ -57,12 +57,14 @@ void ServerService::Send(json message)
 
 json ServerService::Receive()
 {
-	std::string message = "";
+	std::string message = restData;
 	char data[255];
 	std::size_t received = -1;
+	std::size_t pos = 1;
 
-	while (received != 0)
+	while (received != 0 && message.find('\n', pos) == std::string::npos)
 	{
+		pos += received;
 		sf::Socket::Status status = tcpSocket.receive(data, 255, received);
 
 		if (status == sf::Socket::Done)
@@ -74,6 +76,16 @@ json ServerService::Receive()
 			return nullptr;
 		}
 	}
+
+	std::size_t endPos = message.find('\n', pos);
+
+	if (endPos == std::string::npos)
+	{
+		return nullptr;
+	}
+
+	restData = message.substr(endPos + 1);
+	message = message.substr(0, endPos);
 
 	return json::parse(message);
 }

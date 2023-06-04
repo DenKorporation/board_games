@@ -27,4 +27,5 @@ public:
 
 private:
 	sf::TcpSocket tcpSocket;
+	std::string restData;
 };
