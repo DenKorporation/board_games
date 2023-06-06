@@ -1,4 +1,6 @@
-﻿namespace ServerLib;
+﻿using System.Text.Json;
+
+namespace ServerLib;
 
 class Game
 {
@@ -9,6 +11,8 @@ class Game
     public int Count { get; set; }
 
     internal bool Started { get; set; }
+
+    private object lockObj;
 
     internal ServerObject Server { get; set; }
     internal ClientObject? Host { get; set; }
@@ -73,6 +77,18 @@ class Game
     {
         Host?.SendGameStartEvent();
         Join?.SendGameStartEvent();
+    }
+
+    internal void SendAction(JsonElement message, ClientObject client)
+    {
+        if (client == Host)
+        {
+            Join?.SendAction(message);
+        }
+        else
+        {
+            Host?.SendAction(message);
+        }
     }
 
     internal Game(string name)

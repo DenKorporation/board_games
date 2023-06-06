@@ -153,31 +153,28 @@ void CardGroup::sort()
 			return;
 		}
 
-		if (mType == Player)
+		std::vector<Card *> trumpCards;
+		std::vector<Card *> commonCards;
+		for (auto card = mCards.begin(); card != mCards.end(); card++)
 		{
-			std::vector<Card *> trumpCards;
-			std::vector<Card *> commonCards;
-			for (auto card = mCards.begin(); card != mCards.end(); card++)
+			if ((*card)->getSuit() == mTrump)
 			{
-				if ((*card)->getSuit() == mTrump)
-				{
-					trumpCards.push_back(*card);
-				}
-				else
-				{
-					commonCards.push_back(*card);
-				}
+				trumpCards.push_back(*card);
 			}
-
-			std::sort(commonCards.begin(), commonCards.end(), cardComparator);
-			std::sort(trumpCards.begin(), trumpCards.end(), cardComparator);
-
-			mCards.clear();
-			mCards.insert(mCards.end(), commonCards.begin(), commonCards.end());
-			mCards.insert(mCards.end(), trumpCards.begin(), trumpCards.end());
-			commonCards.clear();
-			trumpCards.clear();
+			else
+			{
+				commonCards.push_back(*card);
+			}
 		}
+
+		std::sort(commonCards.begin(), commonCards.end(), cardComparator);
+		std::sort(trumpCards.begin(), trumpCards.end(), cardComparator);
+
+		mCards.clear();
+		mCards.insert(mCards.end(), commonCards.begin(), commonCards.end());
+		mCards.insert(mCards.end(), trumpCards.begin(), trumpCards.end());
+		commonCards.clear();
+		trumpCards.clear();
 
 		sf::FloatRect cardBounds = mCards[0]->getGlobalBounds();
 		sf::Vector2f areaSize = getWorldSize();

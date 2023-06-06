@@ -237,7 +237,7 @@ void ConnectionWaitState::backgroundAction(std::future<void> futureObj)
 			getContext().gameInfo->getGameDescription().Count = reply["Game"]["Count"];
 			getContext().gameInfo->setServerService(std::move(mService));
 			requestStackClear();
-			requestStackPush(States::Game);
+			requestStackPush(States::MultiplayerGame);
 		}
 	}
 }

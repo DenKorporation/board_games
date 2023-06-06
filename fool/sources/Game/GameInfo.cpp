@@ -30,7 +30,7 @@ void GameInfo::setServerService(std::unique_ptr<ServerService> service)
 	curService = std::move(service);
 }
 
-ServerService &GameInfo::getServerService()
+std::unique_ptr<ServerService> GameInfo::getServerService()
 {
-	return *curService;
+	return std::move(curService);
 }

@@ -14,6 +14,8 @@ class ClientObject
     TcpClient client;
     ServerObject server;
 
+    private bool isGameInit = false;
+
     internal ClientObject(TcpClient tcpClient, ServerObject serverObject)
     {
         client = tcpClient;
@@ -45,7 +47,7 @@ class ClientObject
                     ListRoomAction();
                     break;
                 case "Game":
-                    GameAction(element);
+                    GameAction();
                     break;
                 case "Test":
                     TestAction();
@@ -68,8 +70,9 @@ class ClientObject
         Game.Server = server;
         lock (server.AllPendingGames)
         {
-            server.AllPendingGames.Add(Game);   
+            server.AllPendingGames.Add(Game);
         }
+
         Dictionary<string, object> reply = new()
         {
             { "Type", "Create" },
@@ -89,6 +92,7 @@ class ClientObject
         {
             Game = server.AllPendingGames.FirstOrDefault(game => game.Id == element.GetProperty("Id").ToString());
         }
+
         Dictionary<string, object> reply;
         if (Game == null || !Game.AddPlayer(this))
         {
@@ -121,6 +125,7 @@ class ClientObject
 
             try
             {
+                bool isGame = false;
                 while (true)
                 {
                     string? message = await Reader.ReadLineAsync();
@@ -130,18 +135,28 @@ class ClientObject
                         if (doc.RootElement.GetProperty("Type").ToString() == "Disconnect")
                         {
                             break;
-                        } else if (doc.RootElement.GetProperty("Type").ToString() == "Game")
+                        }
+                        else if (doc.RootElement.GetProperty("Type").ToString() == "Game" &&
+                                 doc.RootElement.GetProperty("Status").ToString() == "Start")
                         {
+                            isGame = true;
                             break;
                         }
                     }
                 }
-                Console.WriteLine($"{Id}: room {Game.Id}: leave room");
-                
+
+                if (isGame)
+                {
+                    await GameAction();
+                }
+                else
+                {
+                    Console.WriteLine($"{Id}: room {Game.Id}: leave room");
+                }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
                 throw;
             }
             finally
@@ -155,6 +170,15 @@ class ClientObject
     {
         Game?.RemovePlayer(this);
         Console.WriteLine($"{Id}: leaved the room {Game.Id}");
+    }
+
+    internal void SendAction(JsonElement message)
+    {
+        while (!isGameInit)
+        {
+        }
+        Writer.WriteLine(message);
+        Writer.Flush();
     }
 
     internal void SendDisconnectEvent()
@@ -190,7 +214,7 @@ class ClientObject
         string message;
         lock (server.AllPendingGames)
         {
-            message = JsonSerializer.Serialize(server.AllPendingGames);   
+            message = JsonSerializer.Serialize(server.AllPendingGames);
         }
 
         Writer.WriteLine(message);
@@ -199,8 +223,37 @@ class ClientObject
         Console.WriteLine($"{Id}: list of games sent");
     }
 
-    private void GameAction(JsonElement element)
+    private async Task GameAction()
     {
+        Dictionary<string, object> reply = new Dictionary<string, object>();
+        reply["Type"] = "Game";
+        reply["Status"] = "Init";
+        reply["Host"] = this == Game.Host;
+        Writer.WriteLine(JsonSerializer.Serialize(reply));
+        Writer.Flush();
+        isGameInit = true;
+        while (true)
+        {
+            string? message = await Reader.ReadLineAsync();
+            if (!String.IsNullOrEmpty(message))
+            {
+                using JsonDocument doc = JsonDocument.Parse(message);
+                JsonElement root = doc.RootElement;
+                if (root.GetProperty("Type").ToString() == "Game" && root.GetProperty("Status").ToString() == "Shuffle")
+                {
+                    Game.SendAction(root, this);
+                }
+                else if (root.GetProperty("Type").ToString() == "Game" &&
+                         root.GetProperty("Status").ToString() == "Action")
+                {
+                    Game.SendAction(root, this);
+                }
+                else if (doc.RootElement.GetProperty("Type").ToString() == "Disconnect")
+                {
+                    break;
+                }
+            }
+        }
     }
 
     private void TestAction()

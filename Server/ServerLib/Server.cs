@@ -28,9 +28,9 @@ public class ServerObject
                 Task.Run(clientObject.ProcessAsync);
             }
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(e.Message);
         }
         finally
         {

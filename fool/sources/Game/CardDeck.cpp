@@ -58,6 +58,25 @@ void CardDeck::shuffle()
 	mTrump = mCards[0]->getSuit();
 }
 
+void CardDeck::applyShuffle()
+{
+	for (Card *child : mCards)
+	{
+		child->changeSide(false);
+	}
+	mCards[0]->changeSide(true);
+	mTrump = mCards[0]->getSuit();
+}
+
+void CardDeck::getDeckDescription(int deck[][2])
+{
+	for (size_t i = 0; i < mCards.size(); i++)
+	{
+		deck[i][0] = (int)mCards[i]->getSuit();
+		deck[i][1] = (int)mCards[i]->getRank();
+	}
+}
+
 void CardDeck::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
 	states.transform *= getTransform();

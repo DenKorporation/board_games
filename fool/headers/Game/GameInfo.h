@@ -27,7 +27,7 @@ public:
 	GameDescription &getGameDescription();
 
 	void setServerService(std::unique_ptr<ServerService> service);
-	ServerService &getServerService();
+	std::unique_ptr<ServerService> getServerService();
 
 private:
 	Status currentStatus;

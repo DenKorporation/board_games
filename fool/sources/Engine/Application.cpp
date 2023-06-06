@@ -10,13 +10,14 @@
 #include "States/MultiplayerConnectionState.h"
 #include "States/CreatingRoomState.h"
 #include "States/ConnectionWaitState.h"
+#include "States/MultiplayerGameState.h"
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 144.f);
 
 Application::Application()
-	: mWindow(sf::VideoMode(1920, 1080), "Fool", sf::Style::Fullscreen),
-	  // : mWindow(sf::VideoMode(1600, 900), "Fool"),
-	  // : mWindow(sf::VideoMode(900, 600), "Fool"),
+	// : mWindow(sf::VideoMode(1920, 1080), "Fool", sf::Style::Fullscreen),
+	// : mWindow(sf::VideoMode(1600, 900), "Fool"),
+	  : mWindow(sf::VideoMode(900, 600), "Fool"),
 	  mTextures(),
 	  mFonts(),
 	  mSounds(),
@@ -138,6 +139,7 @@ void Application::registerStates()
 {
 	mStateStack.registerState<MenuState>(States::Menu);
 	mStateStack.registerState<GameState>(States::Game);
+	mStateStack.registerState<MultiplayerGameState>(States::MultiplayerGame);
 	mStateStack.registerState<PauseState>(States::Pause);
 	mStateStack.registerState<SettingsState>(States::Settings);
 	mStateStack.registerState<GameEndState>(States::GameEnd);
